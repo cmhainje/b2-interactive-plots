@@ -18,6 +18,7 @@ const slider_p = document.getElementById('slider-p');
 const slider_theta = document.getElementById('slider-theta');
 const string_p = document.getElementById('string-p');
 const string_theta = document.getElementById('string-theta');
+const warning_text = document.getElementById('warning');
 
 // Event listeners
 function makeFilename() {
@@ -43,6 +44,7 @@ bin_selector.addEventListener('change', (event) => {
         slider_p.style.display = 'inline';
         string_theta.style.display = 'inline';
         slider_theta.style.display = 'inline';
+        warning_text.style.display = 'none';
         image.src = makeFilename();
     }
 
@@ -51,7 +53,7 @@ bin_selector.addEventListener('change', (event) => {
         slider_p.style.display = 'none';
         string_theta.style.display = 'none';
         slider_theta.style.display = 'none';
-
+        warning_text.style.display = 'inline';
         image.src = makeFilename();
     }
 })
