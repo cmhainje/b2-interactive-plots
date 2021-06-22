@@ -12,28 +12,60 @@ const theta_ranges = [
 
 // References to the relevant elements
 const image = document.getElementById('image');
-const image_selector = document.getElementById('image-select')
+const image_selector = document.getElementById('image-select');
+const bin_selector = document.getElementById('bin-select');
 const slider_p = document.getElementById('slider-p');
 const slider_theta = document.getElementById('slider-theta');
 const string_p = document.getElementById('string-p');
 const string_theta = document.getElementById('string-theta');
 
 // Event listeners
+function makeFilename() {
+    if (bin_selector.value == "nobin") {
+        return image_selector.value + ".png";
+    }
+    else {
+        return image_selector.value
+            + "/p" + slider_p.value 
+            + "_theta" + slider_theta.value 
+            + ".png";
+    }
+}
+
 image_selector.addEventListener('change', (event) => {
     const folder_end_index = image.src.lastIndexOf('/p');
-    image.src = String(event.target.value) + image.src.substr(folder_end_index);
+    image.src = makeFilename();
+})
+
+bin_selector.addEventListener('change', (event) => {
+    if (event.target.value == 'bin') {
+        string_p.style.display = 'inline';
+        slider_p.style.display = 'inline';
+        string_theta.style.display = 'inline';
+        slider_theta.style.display = 'inline';
+        image.src = makeFilename();
+    }
+
+    else {
+        string_p.style.display = 'none';
+        slider_p.style.display = 'none';
+        string_theta.style.display = 'none';
+        slider_theta.style.display = 'none';
+
+        image.src = makeFilename();
+    }
 })
 
 slider_p.addEventListener('input', (event) => {
     const p_index = image.src.lastIndexOf('/p');
-    image.src = image.src.substr(0, p_index + 2) + String(event.target.value) + image.src.substr(p_index + 3);
     string_p.innerHTML = `p: ${p_ranges[parseInt(event.target.value)]}`
+    image.src = makeFilename();
 });
 
 slider_theta.addEventListener('input', (event) => {
     const theta_index = image.src.lastIndexOf('_theta');
-    image.src = image.src.substr(0, theta_index + 6) + String(event.target.value) + image.src.substr(theta_index + 7);
     string_theta.innerHTML = `theta: ${theta_ranges[parseInt(event.target.value)]}`
+    image.src = makeFilename();
 });
 
 
