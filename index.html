@@ -7,7 +7,14 @@
     <title>Interactive plots</title>
 </head>
 <body>
-    <img src="confusion/standard/p0_theta0.png" id="image"/>
+    <img src="pgun5/conp0_theta0.png" id="image"/>
+
+    <br><br>
+    <label name="dataset">Dataset:</label><br>
+    <select name="dataset" id="dset-select">
+        <option value="pgun5">ParticleGun: 90k {e, mu, pi, K, p} events</option>
+        <option value="pgun6" disabled=True>ParticleGun: 13M {e, mu, pi, K, p, d} events</option>
+    </select>
 
     <br><br>
     <label name="bin-type">Data to show:</label><br>
@@ -16,18 +23,42 @@
         <option value="nobin">Integrated over all p, theta</option>
     </select>
 
-    <p style="display: none" id="warning"><br><br><b>Note:</b> integrated plots only exist for the unweighted confusion options.</p>
-
     <br><br>
     <label name="img-type">Image type:</label><br>
     <select name="img-type" id="image-select">
-        <option value="confusion/standard">Confusion (unweighted)</option>
-        <option value="confusion/weighted">Confusion (weighted)</option>
+        <!--
+        <option value="conf">Confusion (unweighted)</option>
+        <option value="weighted-confusion">Confusion (weighted)</option>
         <option value="confusion/weighted-pretrain">Confusion (weighted, pretrained)</option>
         <option value="detector_confusion/standard">Detector confusion (unweighted)</option>
         <option value="ablation_confusion/standard">Ablation confusion (unweighted)</option>
         <option value="binned_simple_weights">Weights</option>
         <option value="binned_pretrain_simple_weights">Weights (pretrained)</option>
+        -->
+        <option disabled>───Standard───</option>
+        <option value="con">Confusion</option>
+        <option value="con_frc">Confusion, row-normalized</option>
+        <option value="det">Detector confusion</option>
+        <option value="det_frc">Detector confusion, row-normalized</option>
+        <option value="abl">Ablation confusion</option>
+        <option value="abl_frc">Ablation confusion, row-normalized</option>
+        <option value="abl_del">Ablation confusion: change</option>
+        <option disabled class="nobinonly" value="acc">Accuracy</option>
+        <option disabled class="nobinonly" value="abl_acc">Ablation accuracy</option>
+        <option disabled class="nobinonly" value="abl_acc_del">Ablation accuracy: change</option>
+        <option disabled></option>
+        <option disabled>───Weighted───</option>
+        <option value="wgt">Weights</option>
+        <option value="wgt_con">Confusion, weighted</option>
+        <option value="wgt_con_frc">Confusion, row-normalized, weighted</option>
+        <option value="wgt_det">Detector confusion, weighted</option>
+        <option value="wgt_det_frc">Detector confusion, row-normalized, weighted</option>
+        <option value="wgt_abl">Ablation confusion, weighted</option>
+        <option value="wgt_abl_frc">Ablation confusion, row-normalized, weighted</option>
+        <option value="wgt_abl_del">Ablation confusion: change, weighted</option>
+        <option disabled class="nobinonly" value="wgt_acc">Accuracy, weighted</option>
+        <option disabled class="nobinonly" value="wgt_abl_acc">Ablation accuracy, weighted</option>
+        <option disabled class="nobinonly" value="wgt_abl_acc_del">Ablation accuracy: change, weighted</option>
     </select>
 
     <br><br>
