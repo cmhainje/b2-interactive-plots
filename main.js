@@ -41,6 +41,8 @@ const theta_ranges = [
 
 
 function deltaSupported() {
+    if (type_select.value == "wgt")
+        return false;
     if (plot_select.value == "det")
         return false;
     if (plot_select.value == "abl" || plot_select.value == "abl_acc")
@@ -84,13 +86,13 @@ function setVisibilities() {
 function setImageSource() {
     let src = "pgun6/";
 
-    if (wgt_check_is_on) 
-        src += "wgt_";
-
     if (type_select.value == "wgt")
         src += "wgt";
-    else
+    else {
+        if (wgt_check_is_on) 
+            src += "wgt_";
         src += plot_select.value;
+    }
 
     if (deltaSupported() && dlt_check_is_on)
         src += "_del";
