@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Docs | Interactive plots</title>
+    <style>
+        body {
+            max-width: 700px;
+            text-align: left !important;
+        }
+    </style>
+</head>
+<body>
+
+    <p><a href="index.html">Back to the plots</a></p>
+
+    <h1>Documentation</h1>
+
+    <h2>Description of plots</h2>
+
+    <p>
+        There are fundamentally three classes of plots that we make:
+        'confusion', 'accuracy' (or efficiency), and 'weights'. Confusion plots
+        deal with visualizing confusion matrices, allowing us to analyze the
+        predictions made from the log-likelihood information and showing us
+        generally which particle types tend to be confused with others.
+        Accuracy plots show the accuracy of our identification system as a 
+        function of momentum and theta. When restricted to single particles,
+        these plots show the efficiency for those particle types. Lastly,
+        the weights plots visualize the calibration weights that we have
+        trained.
+    </p>
+
+    <h3>Confusion</h3>
+
+    <p>
+    There are three kinds of confusion plots that we give: 'confusion',
+    'detector confusion', and 'ablation confusion'.
+    </p>
+
+    <p>
+    <b>Confusion</b> plots show the confusion matrix of the model for the
+    specified data. In particular, we use log-likelihood information from all
+    six PID detectors to calculate the likelihood ratios and determine the
+    predicted identity of the particle.
+    </p>
+
+    <p>
+    <b>Detector confusion</b> plots show the confusion matrices for each
+    detector for the specified data. In particular, we ask the question, "If we
+    only had log-likelihood data from <i>this</i> specific detector, what would
+    the resulting particle identification be?" Notice also that the number of
+    events in the dataset varies for each detector. This is because we omit any
+    events for which the detector did not report log-likelihoods when
+    calculating these confusion matrices.
+    </p>
+
+    <p>
+    <b>Ablation confusion</b> plots show the confusion matrices for the
+    specified data that would be computed if we disabled one of the detectors.
+    In particular, we ask the question, "If <i>this</i> specific detector were
+    disabled, what would the resulting particle identification be?" For these
+    plots, we hope to see that disabling a detector worsens performance, so we
+    generally hope to see that the values along the diagonal become smaller and
+    the values off the diagonal become larger. This would indicate that the
+    detector adds useful and valuable information to the identification
+    calcuation.
+    </p>
+
+    <h3>Accuracy</h3>
+
+    <p>
+    There are two kinds of accuracy plots that we provide: 'accuracy' and
+    'ablation accuracy'.
+    </p>
+
+    <p>
+    <b>Accuracy</b> plots show the accuracy of the particle identification
+    system in each (p, theta) bin. This would be equivalent to looking at the
+    confusion matrix in each (p, theta) bin and computing the sum of the
+    diagonal entries divided by the total number of events in the bin.
+    </p>
+
+    <p>
+    <b>Ablation accuracy</b> plots show the same thing as the standard accuracy
+    plots, but they again ask the question, "How would this be impacted if one
+    of the detectors was disabled?"
+    </p>
+
+    <h3>Weights</h3>
+
+    <p>
+    The <b>Weights</b> plots show the trained weights corresponding to the
+    network that was trained either on the full dataset or on the data in the
+    specified bin. These weights generally serve to push adjust the general
+    magnitude of detectors' log-likelihoods, or to increase intra-detector
+    likelihood separation between given particle types. They should <i>not</i>
+    in general be understood as describing the "importance" of a detector 
+    for the likelihood calculation, as that depends also on the magnitude of
+    the detector's contributions to the hypothesis log-likelihoods and the
+    resulting likelihood ratio.
+    </p>
+
+    <h2>Options</h2>
+
+    <p>
+    For most of the above plots, there are additional options that can be
+    selected.  These are described below.
+    </p>
+
+    <h3>Use trained calibration weights?</h3>
+
+    <p>
+    This option allows you to view the same plot if the trained calibration
+    weights were used in the likelihood ratio calculations. In the majority of
+    cases, this improves the overall identification performance. For more on
+    these weights and how they are used, please read our internal note.
+    </p>
+
+    <p>
+    Note that for 'accuracy' plots, enabling this option will cause accuracies
+    to be computed in each bin using the weights from the network trained in
+    <i>that</i> particular bin. There are currently no provided plots that show
+    the per-bin accuracy computed using the weights from the network on all
+    data.
+    </p>
+
+    <h3>Plot difference from standard, unweighted?</h3>
+
+    <p>
+    In many cases, it makes sense to understand how a certain set of options
+    has impacted performance relative to the standard, unweighted baseline.
+    For example, if we are looking at a standard 'Confusion' plot and we add
+    trained calibration weights, it may be more instructive to understand
+    how the confusion matrix has changed relative to the unweighted confusion
+    matrix. That is what this option does.
+    </p>
+
+    <p>
+    Note that when looking at ablation confusion plots, this option always
+    shows the difference between the ablation confusion matrices and the
+    standard, unweighted confusion matrix (in the specified bin or over the
+    whole dataset). If adding weights, this does <i>not</i> show the difference
+    between the weighted and unweighted ablation confusion matrices. To
+    understand the difference between the weighted and unweighted ablation
+    confusion matrices, it is best to compare manually.
+    </p>
+
+    <p>
+    When looking at accuracy plots, this option shows the difference between
+    the current selection and the standard, unweighted, non-ablation accuracy
+    values for the given particle type. That is to say that if looking at 
+    the ablation accuracy plot for electrons only, this optional will show 
+    the difference between the current data and the standard accuracy plot
+    for electrons only, not the standard accuracy plot for all particles.
+    </p>
+
+    <h3>Normalize values by row?</h3>
+
+    <p>
+    This option normalizes the values in a confusion matrix by the row sums.
+    As a result, values in the confusion matrix can be interpreted as fractions
+    of the total number of true particles of the row's particle type.  Values
+    in the 'muon' row, for example, can be interpreted as the fraction of true
+    muons that were predicted to be <i>x</i>, where <i>x</i> is the column
+    particle type.
+    </p>
+
+    <h3>Binned?</h3>
+
+    <p>
+    This option allows you to view the same plot but made using only the data
+    in a given (p, theta) bin. Checking this box also causes two sliders to
+    appear, allowing one to change bins in a very intuitive way.  For 'weights'
+    plots, this option shows the weights for the network which was trained on
+    data in the selected bin. If the "use weights" option is enabled, this
+    option means that the weights corresponding to that specific bin are loaded
+    and used.
+    </p>
+
+    <p>
+    For 'confusion' plots: if this option is unselected, then the confusion 
+    matrix is computed using all of the data in the dataset. Choosing the 
+    "use weights" option will use the weights from the network which was 
+    trained on the entire dataset.
+    </p>
+
+    <h3>Particle type</h3>
+
+    <p>
+    For accuracy plots, there is the additional option to select a particle
+    type. This shows the same accuracy plots computed if only events from the
+    specified particle type are considered. As such, these can be understood as
+    the particle efficiencies as a function of p and theta.
+    </p>
+
+    <h2>Data used for these plots</h2>
+
+    <p>
+    The data that were used for these plots are particle gun events, simulated
+    using BASF2 release 05-02-06. There are approximately 13 million such events,
+    comprised of electrons, muons, pions, kaons, protons, and deuterons in
+    approximately equal numbers. Data were generated with a uniform distribution in 
+    momentum from 0.5 to 5 GeV, in theta from 10 to 170 degrees, and in phi from
+    0 to 360 degrees. For binned studies, we adopt the (p, theta) bins that are
+    used by the Belle II performance group. The cutoffs for these bins are given
+    by
+    </p>
+
+    <ul>
+        <li>p: { 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.5 } GeV</li>
+        <li>theta: { 17, 28, 40, 60, 77, 96, 115, 133, 150 } degrees</li>
+    </ul>
+
+    The BASF2 steering script that was used to run these simulations as well as 
+    all of the code necessary to make all of these plots (and this website) can
+    be found at <a href="https://stash.desy.de/users/chainje/repos/pidml">this
+    stash repository</a>.
+
+
+    
+</body>
+</html>
