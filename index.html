@@ -5,103 +5,112 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="raster.css">
     <title>Interactive plots</title>
 </head>
 <body>
-    <p><a href="docs.html">Documentation</a></p>
 
-    <img src="pgun6/con.png" id="image" style="max-width: 75%;" />
+    <r-grid columns=5>
 
-    <br><br>
-    <label for="img-type-select">Image type:</label>
-    <br>
-    <select name="image-type" id="img-type-select">
-        <option value="conf">Confusion</option>
-        <option value="accu">Accuracy</option>
-        <option value="wgt">Weights</option>
-    </select>
+    <r-cell span=1 class="controls" span-s=row>
+        <p><a href="docs.html">Documentation</a></p>
 
-    <div id="plot-picker">
+        <label for="img-type-select">Image type:</label>
         <br>
-        <label for="plot-select">Choose plot:</label>
-        <br>
-        <select name="plot-type" id="plot-select">
-            <option value="con" class="conf">Confusion</option>
-            <option value="det" class="conf">Detector confusion</option>
-            <option value="abl" class="conf">Ablation confusion</option>
-
-            <option value="acc" class="accu" disabled hidden>Accuracy</option>
-            <option value="abl_acc" class="accu" disabled hidden>Ablation accuracy</option>
+        <select name="image-type" id="img-type-select">
+            <option value="conf">Confusion</option>
+            <option value="accu">Accuracy</option>
+            <option value="wgt">Weights</option>
         </select>
-    </div>
 
-    <div id="particle-type" style="display: none;">
-        <br>
-        <label for="part-select">Particle type:</label>
-        <br>
-        <select name="part-type" id="part-select">
-            <option value="">All</option>
-            <option value="_e">Electron</option>
-            <option value="_mu">Muon</option>
-            <option value="_pi">Pion</option>
-            <option value="_K">Kaon</option>
-            <option value="_p">Proton</option>
-            <option value="_d">Deuteron</option>
-        </select>
-    </div>
-
-    <div id="weight-toggler">
-        <br>
-        <label for="weight-toggle">Use trained calibration weights?</label>
-        <input type="checkbox" name="weight-toggle" id="weight-toggle">
-    </div>
-
-    <div id="delta-toggler" style="display: none;">
-        <br>
-        <label for="delta-toggle">Plot difference from standard, unweighted?</label>
-        <input type="checkbox" name="delta-toggle" id="delta-toggle">
-    </div>
-
-    <div id="rownorm-toggler">
-        <br>
-        <label for="rownorm-toggle">Normalize values by row?</label>
-        <input type="checkbox" name="rownorm-toggle" id="rownorm-toggle">
-    </div>
-
-    <div id="bin-toggler">
-        <br>
-        <label for="bin-toggle">Binned?</label>
-        <input type="checkbox" name="bin-toggle" id="bin-toggle">
-
-        <div id="bin-picker" style="display: none;">
+        <div id="plot-picker">
             <br>
-            <label id="string-p" for="slider-p">p: [0.5, 1.0] GeV</label><br>
-            <input type="range" list="tickmarks-p" min="0" max="6" step="1" id="slider-p" name="slider-p" value="0">
-            <datalist id="tickmarks-p">
-                <option value="0"></option>
-                <option value="1"></option>
-                <option value="2"></option>
-                <option value="3"></option>
-                <option value="4"></option>
-                <option value="5"></option>
-                <option value="6"></option>
-            </datalist>
+            <label for="plot-select">Choose plot:</label>
+            <br>
+            <select name="plot-type" id="plot-select">
+                <option value="con" class="conf">Confusion</option>
+                <option value="det" class="conf">Detector confusion</option>
+                <option value="abl" class="conf">Ablation confusion</option>
 
-            <br><br>
-            <label id="string-theta" for="slider-theta">theta: [17°, 28°]</label><br>
-            <input type="range" list="tickmarks-theta" min="0" max="7" step="1" id="slider-theta" name="slider-theta" value="0">
-            <datalist id="tickmarks-theta">
-                <option value="0"></option>
-                <option value="1"></option>
-                <option value="2"></option>
-                <option value="3"></option>
-                <option value="4"></option>
-                <option value="5"></option>
-                <option value="6"></option>
-                <option value="7"></option>
-            </datalist>
+                <option value="acc" class="accu" disabled hidden>Accuracy</option>
+                <option value="abl_acc" class="accu" disabled hidden>Ablation accuracy</option>
+            </select>
         </div>
-    </div>
+
+        <div id="particle-type" style="display: none;">
+            <br>
+            <label for="part-select">Particle type:</label>
+            <br>
+            <select name="part-type" id="part-select">
+                <option value="">All</option>
+                <option value="_e">Electron</option>
+                <option value="_mu">Muon</option>
+                <option value="_pi">Pion</option>
+                <option value="_K">Kaon</option>
+                <option value="_p">Proton</option>
+                <option value="_d">Deuteron</option>
+            </select>
+        </div>
+
+        <div id="weight-toggler">
+            <br>
+            <input type="checkbox" name="weight-toggle" id="weight-toggle">
+            <label for="weight-toggle">Use trained calibration weights?</label>
+        </div>
+
+        <div id="delta-toggler" style="display: none;">
+            <br>
+            <input type="checkbox" name="delta-toggle" id="delta-toggle">
+            <label for="delta-toggle">Plot difference from standard, unweighted?</label>
+        </div>
+
+        <div id="rownorm-toggler">
+            <br>
+            <input type="checkbox" name="rownorm-toggle" id="rownorm-toggle">
+            <label for="rownorm-toggle">Normalize values by row?</label>
+        </div>
+
+        <div id="bin-toggler">
+            <br>
+            <input type="checkbox" name="bin-toggle" id="bin-toggle">
+            <label for="bin-toggle">Binned?</label>
+
+            <div id="bin-picker" style="display: none;">
+                <br>
+                <label id="string-p" for="slider-p">p: [0.5, 1.0] GeV</label><br>
+                <input type="range" list="tickmarks-p" min="0" max="6" step="1" id="slider-p" name="slider-p" value="0">
+                <datalist id="tickmarks-p">
+                    <option value="0"></option>
+                    <option value="1"></option>
+                    <option value="2"></option>
+                    <option value="3"></option>
+                    <option value="4"></option>
+                    <option value="5"></option>
+                    <option value="6"></option>
+                </datalist>
+
+                <br><br>
+                <label id="string-theta" for="slider-theta">theta: [17°, 28°]</label><br>
+                <input type="range" list="tickmarks-theta" min="0" max="7" step="1" id="slider-theta" name="slider-theta" value="0">
+                <datalist id="tickmarks-theta">
+                    <option value="0"></option>
+                    <option value="1"></option>
+                    <option value="2"></option>
+                    <option value="3"></option>
+                    <option value="4"></option>
+                    <option value="5"></option>
+                    <option value="6"></option>
+                    <option value="7"></option>
+                </datalist>
+            </div>
+        </div>
+    </r-cell>
+
+    <r-cell span=2.. class="img-container" span-s=row>
+        <img src="pgun6/con.png" id="image"/>
+    </r-cell>
+    
+    </r-grid>
 
     <script src="main.js"></script>
 
