@@ -53,8 +53,6 @@ const plot_lists = {
     `
  };
 
-
-
 const p_ranges = [
     '[0.5, 1.0] GeV', '[1.0, 1.5] GeV', '[1.5, 2.0] GeV', '[2.0, 2.5] GeV',
     '[2.5, 3.0] GeV', '[3.0, 3.5] GeV', '[3.5, 4.5] GeV'
@@ -64,6 +62,38 @@ const theta_ranges = [
     '[17°, 28°]', '[28°, 40°]',  '[40°, 60°]',   '[60°, 77°]',
     '[77°, 96°]', '[96°, 115°]', '[115°, 133°]', '[133°, 150°]',
 ];
+
+let wgt_check_is_on = false;
+let frc_check_is_on = false;
+let dlt_check_is_on = false;
+let bin_check_is_on = false;
+
+function loadURL() {
+    const url = new URL(window.location);
+    const sp = url.searchParams;
+    if (!sp.has('type'))
+        return;
+
+    type_select.value = sp.get('type');
+    plot_select.value = sp.get('plot');
+    part_select.value = sp.get('part');
+    corr_select.value = sp.get('corr');
+    ctrb_select.value = sp.get('ctrb');
+    wgt_check_is_on = sp.get('wgt');
+    frc_check_is_on = sp.get('frc');
+    dlt_check_is_on = sp.get('dlt');
+    bin_check_is_on = sp.get('bin');
+    slider_p.value = sp.get('pslider');
+    slider_theta.value = sp.get('tslider');
+
+    wgt_check.checked = wgt_check_is_on;
+    frc_check.checked = frc_check_is_on;
+    dlt_check.checked = dlt_check_is_on;
+    bin_check.checked = bin_check_is_on;
+
+    setVisibilities();
+    setImageSource();
+}
 
 
 function deltaSupported() {
@@ -135,6 +165,7 @@ function setVisibilities() {
     corr_div.style.display = correctnessSupported() ? "block" : "none";
     ctrb_div.style.display = contribSplitSupported() ? "block" : "none";
     bin_div.style.display = binningSupported() ? "block" : "none";
+    bin_select.style.display = (binningSupported() && bin_check_is_on) ? "block" : "none";
 
     for (const el of document.getElementsByClassName("noblame"))
         el.disabled = (plot_select.value == "blame_bypart");
@@ -179,9 +210,26 @@ function setImageSource() {
     image.src = src; 
 }
 
+function setURL() {
+    let sp = new URLSearchParams();
+    sp.set('type', type_select.value);
+    sp.set('plot', plot_select.value);
+    sp.set('part', part_select.value);
+    sp.set('corr', corr_select.value);
+    sp.set('ctrb', ctrb_select.value);
+    sp.set('wgt', wgt_check_is_on);
+    sp.set('frc', frc_check_is_on);
+    sp.set('dlt', dlt_check_is_on);
+    sp.set('bin', bin_check_is_on);
+    sp.set('pslider', slider_p.value);
+    sp.set('tslider', slider_theta.value);
+    window.history.pushState('', document.title, '?' + sp.toString())
+}
+
 function update(event) {
     setVisibilities();
     setImageSource();
+    setURL();
 }
 
 part_select.addEventListener("change", update);
@@ -192,32 +240,24 @@ ctrb_select.addEventListener("change", update);
 type_select.addEventListener("change", (event) => {
     plot_select.innerHTML = plot_lists[event.target.value];
     plot_select.dispatchEvent(new Event('change'));
-    setVisibilities();
-    setImageSource();
+    update(event);
 });
 
-let wgt_check_is_on = false;
 wgt_check.addEventListener("input", (event) => {
     wgt_check_is_on = !(wgt_check_is_on);
-    setVisibilities();
-    setImageSource();
+    update(event);
 });
 
-let frc_check_is_on = false;
 frc_check.addEventListener("input", (event) => {
     frc_check_is_on = !(frc_check_is_on);
-    setVisibilities();
-    setImageSource();
+    update(event);
 });
 
-let dlt_check_is_on = false;
 dlt_check.addEventListener("input", (event) => {
     dlt_check_is_on = !(dlt_check_is_on);
-    setVisibilities();
-    setImageSource();
+    update(event);
 });
 
-let bin_check_is_on = false;
 bin_check.addEventListener("input", (event) => {
     bin_check_is_on = !(bin_check_is_on);
     if (bin_check_is_on) {
@@ -225,17 +265,21 @@ bin_check.addEventListener("input", (event) => {
     } else {
         bin_select.style.display = "none";
     }
-    setVisibilities();
-    setImageSource();
+    update(event);
 });
 
 slider_p.addEventListener('input', (event) => {
     string_p.innerHTML = `p: ${p_ranges[parseInt(event.target.value)]}`
     setImageSource();
+    setURL();
 });
 
 slider_theta.addEventListener('input', (event) => {
     string_theta.innerHTML = `theta: ${theta_ranges[parseInt(event.target.value)]}`
     setImageSource();
+    setURL();
 });
 
+window.onpopstate = (event) => {
+    loadURL();
+};
