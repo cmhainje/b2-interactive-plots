@@ -129,7 +129,7 @@ function deltaSupported() {
 }
 
 function fracSupported() {
-    if (type_select.value == "accu" || "ctrb")
+    if (type_select.value == "accu" || type_select.value == "ctrb")
         return false;
     if (deltaSupported() && dlt_check_is_on)
         return false;
