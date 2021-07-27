@@ -113,19 +113,12 @@ function loadURL() {
 
 
 function deltaSupported() {
-    if (type_select.value == "wgts")
+    if (type_select.value == "conf")
+        return (plot_select.value == "abl" || wgt_check_is_on);
+    else if (type_select.value == "accu")
+        return (plot_select.value != "acc");
+    else
         return false;
-    if (type_select.value == "accu") {
-        if (plot_select.value != "acc")
-            return true;
-    }
-    if (type_select.value == "llrs")
-        return false;
-    if (type_select.value == "nums")
-        return false;
-    if (type_select.value == "ctrb")
-        return false;
-    return wgt_check_is_on;
 }
 
 function fracSupported() {
