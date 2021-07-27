@@ -4,6 +4,10 @@ const plot_div     = document.getElementById("plot-picker");
 const type_select  = document.getElementById("img-type-select");
 const part_select  = document.getElementById("part-select");
 const part_div     = document.getElementById("particle-type");
+const corr_select  = document.getElementById("correct-select");
+const corr_div     = document.getElementById("correct-type");
+const ctrb_select  = document.getElementById("contrib-select");
+const ctrb_div     = document.getElementById("contrib-type");
 const wgt_check    = document.getElementById("weight-toggle");
 const wgt_div      = document.getElementById("weight-toggler");
 const frc_check    = document.getElementById("rownorm-toggle");
@@ -18,16 +22,38 @@ const slider_theta = document.getElementById('slider-theta');
 const string_p     = document.getElementById('string-p');
 const string_theta = document.getElementById('string-theta');
 
-const conf_plot_list = `
-    <option value="con" class="conf">Confusion</option>
-    <option value="det" class="conf">Detector confusion</option>
-    <option value="abl" class="conf">Ablation confusion</option>
-`;
+const plot_lists = { 
+    'conf':`
+        <option value="con" class="conf">Confusion</option>
+        <option value="det" class="conf">Detector confusion</option>
+        <option value="abl" class="conf">Ablation confusion</option>
+    `,
 
-const accu_plot_list = `
-    <option value="acc" class="accu">Accuracy</option>
-    <option value="abl_acc" class="accu">Ablation accuracy</option>
-`;
+    'accu':`
+        <option value="acc" class="accu">Accuracy</option>
+        <option value="det" class="accu">Detector accuracy</option>
+        <option value="abl" class="accu">Ablation accuracy</option>
+    `,
+
+    'llrs':`
+        <option value="all" class="llrs">All event likelihood ratios</option>
+        <option value="max" class="llrs">Maximum event likelihood ratios</option>
+    `,
+
+    'nums':`
+        <option value="nosplit" class="nums">No split</option>
+        <option value="bypart"  class="nums">Split by particle</option>
+    `,
+
+    'ctrb':`
+        <option value="ctrb"   class="ctrb">Contributions</option>
+        <option value="blfreq" class="ctrb">Blame frequency</option>
+        <option value="blame"  class="ctrb">Blame</option>
+        <option value="blame_bypart"  class="ctrb">Blame by particle type</option>
+    `
+ };
+
+
 
 const p_ranges = [
     '[0.5, 1.0] GeV', '[1.0, 1.5] GeV', '[1.5, 2.0] GeV', '[2.0, 2.5] GeV',
@@ -41,17 +67,23 @@ const theta_ranges = [
 
 
 function deltaSupported() {
-    if (type_select.value == "wgt")
+    if (type_select.value == "wgts")
         return false;
-    if (plot_select.value == "det")
+    if (type_select.value == "accu") {
+        if (plot_select.value != "acc")
+            return true;
+    }
+    if (type_select.value == "llrs")
         return false;
-    if (plot_select.value == "abl" || plot_select.value == "abl_acc")
-        return true;
+    if (type_select.value == "nums")
+        return false;
+    if (type_select.value == "ctrb")
+        return false;
     return wgt_check_is_on;
 }
 
 function fracSupported() {
-    if (type_select.value == "accu")
+    if (type_select.value == "accu" || "ctrb")
         return false;
     if (deltaSupported() && dlt_check_is_on)
         return false;
@@ -59,15 +91,35 @@ function fracSupported() {
 }
 
 function binningSupported() {
-    return (type_select.value != "accu");
+    if (type_select.value == "accu")
+        return false;
+    if (type_select.value == "nums")
+        return false;
+    if (type_select.value == "ctrb") {
+        if (plot_select.value == "blame")
+            return false;
+        if (plot_select.value == "blame_bypart")
+            return false;
+    }
+    return true;
 }
 
 function particleTypeSupported() {
-    return (type_select.value == "accu");
+    if (type_select.value == "accu") return true;
+    if (plot_select.value == "blame") return true;
+    return false;
+}
+
+function correctnessSupported() {
+    return (type_select.value == "llrs") || (type_select.value == "nums") || (plot_select.value == "blame_bypart");
+}
+
+function contribSplitSupported() {
+    return (plot_select.value == "ctrb");
 }
 
 function setVisibilities() {
-    if (type_select.value == "wgt") {
+    if (type_select.value == "wgts") {
         plot_div.style.display = "none";
         part_div.style.display = "none";
         wgt_div.style.display = "none";
@@ -80,53 +132,65 @@ function setVisibilities() {
         frc_div.style.display = fracSupported() ? "block" : "none";
         dlt_div.style.display = deltaSupported() ? "block" : "none";
     }
+    corr_div.style.display = correctnessSupported() ? "block" : "none";
+    ctrb_div.style.display = contribSplitSupported() ? "block" : "none";
     bin_div.style.display = binningSupported() ? "block" : "none";
+
+    for (const el of document.getElementsByClassName("noblame"))
+        el.disabled = (plot_select.value == "blame_bypart");
 }
 
 function setImageSource() {
     let src = "pgun6/";
 
-    if (type_select.value == "wgt")
-        src += "wgt";
-    else {
-        if (wgt_check_is_on) 
-            src += "wgt_";
-        src += plot_select.value;
+    src += type_select.value;
+    if (type_select.value == "wgts") {
+        if (bin_check_is_on)
+            src += "_" + slider_p.value + "_" + slider_theta.value;
+        src += ".png";
+        image.src = src;
+        return;
     }
 
-    if (deltaSupported() && dlt_check_is_on)
-        src += "_del";
+    src += "_" + plot_select.value;
+
+    if (contribSplitSupported())
+        src += ctrb_select.value;
     
+    if (correctnessSupported())
+        src += "_" + corr_select.value;
+
+    if (wgt_check_is_on)
+        src += "_wgt";
+
+    if (deltaSupported() && dlt_check_is_on)
+        src += "_delta";
+
     if (fracSupported() && frc_check_is_on)
-        src += "_frc";
+        src += "_norm";
 
     if (particleTypeSupported())
         src += part_select.value;
 
     if (binningSupported() && bin_check_is_on)
-        src += "_p" + slider_p.value + "_theta" + slider_theta.value;
+        src += "_" + slider_p.value + "_" + slider_theta.value;
 
     src += ".png";
     image.src = src; 
 }
 
-
-part_select.addEventListener("change", (event) => {
+function update(event) {
     setVisibilities();
     setImageSource();
-})
+}
 
-plot_select.addEventListener("change", (event) => {
-    setVisibilities();
-    setImageSource();
-});
+part_select.addEventListener("change", update);
+plot_select.addEventListener("change", update);
+corr_select.addEventListener("change", update);
+ctrb_select.addEventListener("change", update);
 
 type_select.addEventListener("change", (event) => {
-    if (event.target.value == "conf") {
-        plot_select.innerHTML = conf_plot_list;
-    } else {
-        plot_select.innerHTML = accu_plot_list;
-    }
+    plot_select.innerHTML = plot_lists[event.target.value];
     plot_select.dispatchEvent(new Event('change'));
     setVisibilities();
     setImageSource();

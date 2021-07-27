@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="styles.css">
     <title>Docs | Interactive plots</title>
     <style> body { max-width: 700px; } </style>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
 
@@ -17,16 +19,16 @@
     <h2>Description of plots</h2>
 
     <p>
-        There are fundamentally three classes of plots that we make:
-        'confusion', 'accuracy' (or efficiency), and 'weights'. Confusion plots
-        deal with visualizing confusion matrices, allowing us to analyze the
-        predictions made from the log-likelihood information and showing us
-        generally which particle types tend to be confused with others.
-        Accuracy plots show the accuracy of our identification system as a 
-        function of momentum and theta. When restricted to single particles,
-        these plots show the efficiency for those particle types. Lastly,
-        the weights plots visualize the calibration weights that we have
-        trained.
+        There are several fundamental classes of plots that we make:
+        'confusion', 'accuracy', 'weights', 'likelihood ratios', 'numbers of
+        events', and 'contributions'. Confusion plots deal with visualizing
+        confusion matrices, allowing us to analyze the predictions made from the
+        log-likelihood information and showing us generally which particle types
+        tend to be confused with others.  Accuracy plots show the accuracy of
+        our identification system as a function of momentum and theta. When
+        restricted to single particles, these plots show the efficiency for
+        those particle types. Lastly, the weights plots visualize the
+        calibration weights that we have trained.
     </p>
 
     <h3>Confusion</h3>
@@ -68,15 +70,22 @@
     <h3>Accuracy</h3>
 
     <p>
-    There are two kinds of accuracy plots that we provide: 'accuracy' and
-    'ablation accuracy'.
+    There are three kinds of accuracy plots that we provide: 'accuracy',
+    'detector accuracy', and 'ablation accuracy'. Note that when split by
+    particle type, accuracy plots give the particle efficiency.
     </p>
 
     <p>
     <b>Accuracy</b> plots show the accuracy of the particle identification
-    system in each (p, theta) bin. This would be equivalent to looking at the
-    confusion matrix in each (p, theta) bin and computing the sum of the
-    diagonal entries divided by the total number of events in the bin.
+    system in each \( (p, \theta) \) bin. This would be equivalent to looking at
+    the confusion matrix in each \( (p, \theta) \) bin and computing the sum of
+    the diagonal entries divided by the total number of events in the bin.
+    </p>
+
+    <p>
+    <b>Detector accuracy</b> plots show the accuracy of the particle
+    identification system in each \( (p, \theta) \) bin using only the
+    log-likelihood information from a single detector at a time.
     </p>
 
     <p>
@@ -99,11 +108,95 @@
     resulting likelihood ratio.
     </p>
 
+    <h3>Likelihood ratios</h3>
+
+    <p>
+    We provide two different views of the likelihood ratios: the distribution of
+    <i>all</i> likelihood ratios for every event or simply the distribution of
+    the maximum likelihood ratios. For each, one can filter by whether the event
+    was correctly or incorrectly identified. 
+    </p>
+
+    <p>
+    <b>All event likelihood ratios</b> plots show the distributions of the 
+    likelihood ratios for all six supported particle hypotheses. These are
+    separated into six subplots by true particle type.
+    </p>
+
+    <p>
+    <b>Maximum event likelihood ratios</b> plots show the distributions of the 
+    maximum likelihood ratio for each event. When filtering by correctly
+    identified events, we can see that the plots only show the distributions of
+    the likelihood ratios for the correct hypothesis. This makes sense, as the
+    event being correctly identified means that the correct hypothesis had the
+    largest likelihood ratio.
+    </p>
+
+    <h3>Numbers of events</h3>
+
+    <p>
+    These plots do exactly what they say on the tin: they simply show the number 
+    of events in each \( (p, \theta) \) bin. There are two primary kinds of these
+    plots: <b>no split</b>, which just shows the total number of events in each
+    bin, and <b>split by particle</b>, which shows the number of events of each
+    particle type in each bin. One can further filter these events by correct or
+    incorrect identification.
+    </p>
+
+    <h3>Contributions</h3>
+
+    <p>
+    Contributions plots aim to help elucidate the role that each detector plays
+    individually in an identification. Specifically, for some event with 
+    predicted particle type \( h \), we define the contribution of detector 
+    \( d \) to be 
+    \[ \text{contrib}_d = P(h) - P(h)_{\cancel{d}}, \]
+    where \( P(h) \) is the likelihood ratio for hypothesis \( h \) and 
+    \( P(h)_{\cancel{d}} \) is the same likelihood ratio but calculated omitting
+    the log-likelihood data of detector \( d \). Then, of the six detectors,
+    the one with the largest contribution is said to take the "blame" for the 
+    identification, good or bad.
+    </p>
+    
+    <p>
+    <b>Note</b> specifically that this is only defined for the hypothesis with
+    the maximum likelihood ratio.  We do <i>not</i> consider a detector's
+    contribution to the lesser likelihood ratios in these plots.
+    </p>
+
+    <p>
+    <b>Contributions</b> plots within this category show specifically the
+    distribution of these contribution values. One can choose to split up the
+    events by correctness of identification, detector type, or true particle
+    type. 
+    </p>
+
+    <p>
+    <b>Blame frequency</b> plots show how frequently each detector takes the 
+    blame for an identification. Specifically, these plots show the number 
+    of times that each detector had the largest contribution to the maximum 
+    likelihood ratio.
+    </p>
+
+    <p>
+    <b>Blame</b> plots show which detector in each \( (p, \theta) \) bin takes 
+    the blame the most frequently, along with the corresponding frequency. These
+    plots are split into two subplots by the correctness of the final
+    identification, and may be filtered by true particle type.
+    </p>
+
+    <p>
+    <b>Blame by particle type</b> plots show the blame plots split into six
+    subplots corresponding to the six supported particle types. The data may 
+    then be filtered by either correct or incorrect identifications.
+    </p>
+
+
     <h2>Options</h2>
 
     <p>
     For most of the above plots, there are additional options that can be
-    selected.  These are described below.
+    selected. These are described below.
     </p>
 
     <h3>Use trained calibration weights?</h3>
@@ -168,12 +261,12 @@
 
     <p>
     This option allows you to view the same plot but made using only the data
-    in a given (p, theta) bin. Checking this box also causes two sliders to
-    appear, allowing one to change bins in a very intuitive way.  For 'weights'
-    plots, this option shows the weights for the network which was trained on
-    data in the selected bin. If the "use weights" option is enabled, this
-    option means that the weights corresponding to that specific bin are loaded
-    and used.
+    in a given \( (p, \theta) \) bin. Checking this box also causes two sliders
+    to appear, allowing one to change bins in a very intuitive way.  For
+    'weights' plots, this option shows the weights for the network which was
+    trained on data in the selected bin. If the "use weights" option is enabled,
+    this option means that the weights corresponding to that specific bin are
+    loaded and used.
     </p>
 
     <p>
@@ -183,13 +276,21 @@
     trained on the entire dataset.
     </p>
 
+    <h3>Correctness</h3>
+    
+    <p>
+    For many plots, there is the option to filter by correctness. One can thus
+    choose to view the plot computed only for events which were correctly 
+    identified, incorrect identified, or sometimes both.
+    </p>
+
     <h3>Particle type</h3>
 
     <p>
     For accuracy plots, there is the additional option to select a particle
     type. This shows the same accuracy plots computed if only events from the
     specified particle type are considered. As such, these can be understood as
-    the particle efficiencies as a function of p and theta.
+    the particle efficiencies as a function of \( p \) and \( \theta \).
     </p>
 
     <h2>Data used for these plots</h2>
@@ -199,21 +300,23 @@
     using BASF2 release 05-02-06. There are approximately 13 million such events,
     comprised of electrons, muons, pions, kaons, protons, and deuterons in
     approximately equal numbers. Data were generated with a uniform distribution in 
-    momentum from 0.5 to 5 GeV, in theta from 10 to 170 degrees, and in phi from
-    0 to 360 degrees. For binned studies, we adopt the (p, theta) bins that are
-    used by the Belle II performance group. The cutoffs for these bins are given
-    by
+    momentum from 0.5 to 5 GeV, in \( \theta \) from 10 to 170 degrees, and in
+    \( phi \) from 0 to 360 degrees. For binned studies, we adopt the \( (p, \theta) \)
+    bins that are used by the Belle II performance group. The cutoffs for these
+    bins are given by
     </p>
 
     <ul>
-        <li>p: { 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.5 } GeV</li>
-        <li>theta: { 17, 28, 40, 60, 77, 96, 115, 133, 150 } degrees</li>
+        <li>\( p \): { 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.5 } GeV</li>
+        <li>\( \theta \): { 17, 28, 40, 60, 77, 96, 115, 133, 150 } degrees</li>
     </ul>
 
+    <p>
     The BASF2 steering script that was used to run these simulations as well as 
     all of the code necessary to make all of these plots (and this website) can
     be found at <a href="https://stash.desy.de/users/chainje/repos/pidml">this
     stash repository</a>.
+    </p>
 
 
     

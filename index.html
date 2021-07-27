@@ -20,7 +20,10 @@
         <select name="image-type" id="img-type-select">
             <option value="conf">Confusion</option>
             <option value="accu">Accuracy</option>
-            <option value="wgt">Weights</option>
+            <option value="wgts">Weights</option>
+            <option value="llrs">Likelihood ratios</option>
+            <option value="nums">Numbers of events</option>
+            <option value="ctrb">Contributions</option>
         </select>
 
         <div id="plot-picker">
@@ -31,9 +34,6 @@
                 <option value="con" class="conf">Confusion</option>
                 <option value="det" class="conf">Detector confusion</option>
                 <option value="abl" class="conf">Ablation confusion</option>
-
-                <option value="acc" class="accu" disabled hidden>Accuracy</option>
-                <option value="abl_acc" class="accu" disabled hidden>Ablation accuracy</option>
             </select>
         </div>
 
@@ -49,6 +49,28 @@
                 <option value="_K">Kaon</option>
                 <option value="_p">Proton</option>
                 <option value="_d">Deuteron</option>
+            </select>
+        </div>
+
+        <div id="correct-type" style="display: none;">
+            <br>
+            <label for="correct-select">Correctness:</label>
+            <br>
+            <select name="correct-type" id="correct-select">
+                <option value="right">Correctly identified</option>
+                <option value="wrong">Incorrectly identified</option>
+                <option value="both" class="noblame">All</option>
+            </select>
+        </div>
+
+        <div id="contrib-type" style="display: none;">
+            <br>
+            <label for="contrib-select">Split subplots by:</label>
+            <br>
+            <select name="contrib-type" id="contrib-select">
+                <option value="_bycor">Correctness of identification</option>
+                <option value="_bydet">Detector</option>
+                <option value="_bypart">Particle type</option>
             </select>
         </div>
 
@@ -107,7 +129,7 @@
     </r-cell>
 
     <r-cell span=2.. class="img-container" span-s=row>
-        <img src="pgun6/con.png" id="image"/>
+        <img src="pgun6/conf_con.png" id="image"/>
     </r-cell>
     
     </r-grid>
