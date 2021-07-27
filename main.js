@@ -71,18 +71,34 @@ let bin_check_is_on = false;
 function loadURL() {
     const url = new URL(window.location);
     const sp = url.searchParams;
-    if (!sp.has('type'))
+    if (!sp.has('type')) {
+        type_select.value = "conf";
+        plot_select.innerHTML = plot_lists[type_select.value];
+        plot_select.value = "con";
+        part_select.value = "";
+        corr_select.value = "right";
+        ctrb_select.value = "_bycor";
+        wgt_check_is_on = false;
+        frc_check_is_on = false;
+        dlt_check_is_on = false;
+        bin_check_is_on = false;
+        slider_p.value = 0;
+        slider_theta.value = 0;
+        setVisibilities();
+        setImageSource();
         return;
+    }
 
     type_select.value = sp.get('type');
+    plot_select.innerHTML = plot_lists[type_select.value];
     plot_select.value = sp.get('plot');
     part_select.value = sp.get('part');
     corr_select.value = sp.get('corr');
     ctrb_select.value = sp.get('ctrb');
-    wgt_check_is_on = sp.get('wgt');
-    frc_check_is_on = sp.get('frc');
-    dlt_check_is_on = sp.get('dlt');
-    bin_check_is_on = sp.get('bin');
+    wgt_check_is_on = (sp.get('wgt') == "true");
+    frc_check_is_on = (sp.get('frc') == "true");
+    dlt_check_is_on = (sp.get('dlt') == "true");
+    bin_check_is_on = (sp.get('bin') == "true");
     slider_p.value = sp.get('pslider');
     slider_theta.value = sp.get('tslider');
 
@@ -240,7 +256,9 @@ ctrb_select.addEventListener("change", update);
 type_select.addEventListener("change", (event) => {
     plot_select.innerHTML = plot_lists[event.target.value];
     plot_select.dispatchEvent(new Event('change'));
-    update(event);
+    setVisibilities();
+    setImageSource();
+    // update(event);
 });
 
 wgt_check.addEventListener("input", (event) => {
