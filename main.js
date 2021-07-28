@@ -48,6 +48,7 @@ const plot_lists = {
     'ctrb':`
         <option value="ctrb"   class="ctrb">Contributions</option>
         <option value="blfreq" class="ctrb">Blame frequency</option>
+        <option value="blfreq_bypart" class="ctrb">Blame frequency by particle type</option>
         <option value="blame"  class="ctrb">Blame</option>
         <option value="blame_bypart"  class="ctrb">Blame by particle type</option>
     `
@@ -146,6 +147,7 @@ function binningSupported() {
 function particleTypeSupported() {
     if (type_select.value == "accu") return true;
     if (plot_select.value == "blame") return true;
+    if (plot_select.value == "blfreq") return true;
     return false;
 }
 
