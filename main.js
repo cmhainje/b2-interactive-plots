@@ -140,6 +140,8 @@ function binningSupported() {
             return false;
         if (plot_select.value == "blame_bypart")
             return false;
+        if (plot_select.value == "blfreq" && part_select.value != "")
+            return false;
     }
     return true;
 }
