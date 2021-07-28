@@ -147,7 +147,7 @@ function binningSupported() {
 function particleTypeSupported() {
     if (type_select.value == "accu") return true;
     if (plot_select.value == "blame") return true;
-    if (plot_select.value == "blfreq") return true;
+    if (plot_select.value == "blfreq") return !bin_check_is_on;
     return false;
 }
 
