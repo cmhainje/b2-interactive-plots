@@ -1,4 +1,6 @@
 const image        = document.getElementById("image");
+const dset_select  = document.getElementById("dset-select");
+const dset_div     = document.getElementById("dset-picker");
 const plot_select  = document.getElementById("plot-select");
 const plot_div     = document.getElementById("plot-picker");
 const type_select  = document.getElementById("img-type-select");
@@ -68,11 +70,13 @@ let wgt_check_is_on = false;
 let frc_check_is_on = false;
 let dlt_check_is_on = false;
 let bin_check_is_on = false;
+let correct_passwd = false;
 
 function loadURL() {
     const url = new URL(window.location);
     const sp = url.searchParams;
-    if (!sp.has('type')) {
+    if (!sp.has('type') || !correct_passwd) {
+        dset_select.value = "pgun6";
         type_select.value = "conf";
         plot_select.innerHTML = plot_lists[type_select.value];
         plot_select.value = "con";
@@ -90,6 +94,7 @@ function loadURL() {
         return;
     }
 
+    dset_select.value = sp.get('dset');
     type_select.value = sp.get('type');
     plot_select.innerHTML = plot_lists[type_select.value];
     plot_select.value = sp.get('plot');
@@ -112,6 +117,11 @@ function loadURL() {
     setImageSource();
 }
 
+function weightSupported() {
+    if (dset_select.value == "pgun6_bothcharge")
+        return false;
+    return true;
+}
 
 function deltaSupported() {
     if (type_select.value == "conf")
@@ -170,7 +180,7 @@ function setVisibilities() {
         dlt_div.style.display = "none";
     } else {
         plot_div.style.display = "block";
-        wgt_div.style.display = "block";
+        wgt_div.style.display = weightSupported() ? "block" : "none";
         part_div.style.display = particleTypeSupported() ? "block" : "none";
         frc_div.style.display = fracSupported() ? "block" : "none";
         dlt_div.style.display = deltaSupported() ? "block" : "none";
@@ -185,7 +195,7 @@ function setVisibilities() {
 }
 
 function setImageSource() {
-    let src = "pgun6/";
+    let src = dset_select.value + "/";
 
     src += type_select.value;
     if (type_select.value == "wgts") {
@@ -225,6 +235,7 @@ function setImageSource() {
 
 function setURL() {
     let sp = new URLSearchParams();
+    sp.set('dset', dset_select.value);
     sp.set('type', type_select.value);
     sp.set('plot', plot_select.value);
     sp.set('part', part_select.value);
@@ -245,6 +256,7 @@ function update(event) {
     setURL();
 }
 
+dset_select.addEventListener("change", update);
 part_select.addEventListener("change", update);
 plot_select.addEventListener("change", update);
 corr_select.addEventListener("change", update);
@@ -298,3 +310,12 @@ slider_theta.addEventListener('input', (event) => {
 window.onpopstate = (event) => {
     loadURL();
 };
+
+function askPass() {
+    let response = prompt('Enter password');
+    if (response == "pnnl") {
+        dset_div.style.display = "block";
+        correct_passwd = true;
+    }
+    return false;
+}

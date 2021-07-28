@@ -14,6 +14,18 @@
     <r-cell span=1 class="controls" span-s=row>
         <p><a href="docs.html">Documentation</a></p>
 
+        <p><a onclick="askPass()" href="#">Access private plots</a></p>
+
+        <div id="dset-picker" style="display: none;">
+            <label for="dset-select">Dataset</label>
+            <br>
+            <select name="dset" id="dset-select">
+                <option value="pgun6">13M pgun {e-, mu-, pi+, K+, p, d}</option>
+                <option value="pgun6_bothcharge">16M pgun {e, mu, pi, K, p, d} + antiparticles</option>
+            </select>
+            <br><br>
+        </div>
+
         <label for="img-type-select">Image type:</label>
         <br>
         <select name="image-type" id="img-type-select">
