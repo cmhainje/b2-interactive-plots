@@ -126,7 +126,7 @@ const upcoming_plot_info = {
             at the TOP/mu plot, we see two histograms. The blue one shows the
             distribution of the TOP's muon likelihoods when muon has the largest
             likelihood of the particle types (even though we are only looking at
-            kaons). The orange one shows the distribution of the TOP's muon
+            pions). The orange one shows the distribution of the TOP's muon
             likelihoods when muons do not have the largest likelihood. Note that
             this plot is only made in one (p, theta) bin; in the future, it 
             could be made for every (p, theta) bin and every true particle type,
