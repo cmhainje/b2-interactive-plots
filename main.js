@@ -53,8 +53,126 @@ const plot_lists = {
         <option value="blfreq_bypart" class="ctrb">Blame frequency by particle type</option>
         <option value="blame"  class="ctrb">Blame</option>
         <option value="blame_bypart"  class="ctrb">Blame by particle type</option>
+    `,
+
+    'upcoming':`
+        <option value="maxLikelihood"     class="upcoming">Max detector likelihoods</option>
+        <option value="likelihoodDiff"    class="upcoming">Difference between largest detector likelihoods</option>
+        <option value="KCDCLikelihood"    class="upcoming">CDC's K likelihoods for true K, all bins</option>
+        <option value="piDetLikelihoods"  class="upcoming">All detector likelihoods for true pi, one bin</option>
+        <option value="mostConfusedByDet" class="upcoming">Each detector's top incorrect ID for true pions</option>
+        <option value="leadingWrong"      class="upcoming">Most frequent incorrect particle types</option>
+        <option value="CDCdisagree"       class="upcoming">Detectors that are most often wrong when CDC is right</option>
     `
  };
+
+const upcoming_plot_info = {
+    "maxLikelihood": {
+        "title": "Maximum detector likelihood values",
+        "desc": `
+            We have a six-by-six grid of subplots. Each row corresponds to a
+            <b>particle hypothesis</b> and each column to a <b>detector</b>. The
+            subplots then show a histogram of the corresponding detector's 
+            likelihoods for the corresponding hypothesis. These values are
+            colored by whether that hypothesis is, in fact, correct. For
+            example, when looking at the CDC/e subplot, we see two histograms.
+            Both give the distribution of the CDC's electron likelihoods;
+            however, the blue gives this distribution over true electrons and
+            the orange gives this distribution over all other true particle
+            types. Note that this plot shows the data only over a specific (p,
+            theta) bin; in the future, such a plot could be made in every bin
+            and the sliders could be used to choose a bin.
+        `
+    },
+    "likelihoodDiff": {
+        "title": "Per detector and hypothesis, difference between two largest likelihoods",
+        "desc": `
+            We again have a six-by-six grid of subplots. Each row corresponds to
+            a <b>true particle sample</b> and each column to a <b>detector</b>. 
+            Each subplot then shows the distribution of the difference between
+            the largest and second largest likelihoods for the given detector.
+            These are colored by whether the largest likelihood corresponds to
+            the correct hypothesis or not. For example, the CDC/e subplot 
+            contains two histograms. The blue one shows the distribution of L_e
+            minus L_2, where "2" is whatever hypothesis gave the second largest
+            likelihood. The orange one shows the distribution of L_1 minus L_2
+            where "1" is the hypothesis for the largest likelihood (which is 
+            <i>not</i> e) and "2" is the hypothesis for the second largest
+            likelihood. Note that this plot is made only in one (p, theta) bin;
+            in the future, it could be made in every (p, theta) bin.
+        `,
+    },
+    "KCDCLikelihood": {
+        "title": "Distribution of the CDC kaon likelihood in each (p, theta) bin for true kaons", 
+        "desc": `
+            Here we have a seven-by-eight grid of subplots. Each row corresponds
+            to a <b>momentum bin</b> in GeV and each column to a <b>theta
+            bin</b> in degrees. Each subplot shows the distribution in the 
+            corresponding (p, theta) bin of the CDC's kaon likelihoods for true
+            kaons, colored by whether the particle was correctly or incorrectly
+            identified. In principle, this plot could be made for every
+            combination of detector and particle type.
+        `
+    },
+    "piDetLikelihoods": {
+        "title": "All detector likelihoods for true pion sample", 
+        "desc": `
+            We have a six-by-six grid of subplots. Each row corresponds to a
+            <b>particle hypothesis</b> and each column to a <b>detector</b>.
+            Each subplot then shows the distribution of the corresponding
+            detector's likelihoods for the corresponding hypothesis. The
+            histograms are colored by whether the likelihood is the largest of
+            that detector's likelihoods for the event. For example, when looking
+            at the TOP/mu plot, we see two histograms. The blue one shows the
+            distribution of the TOP's muon likelihoods when muon has the largest
+            likelihood of the particle types (even though we are only looking at
+            kaons). The orange one shows the distribution of the TOP's muon
+            likelihoods when muons do not have the largest likelihood. Note that
+            this plot is only made in one (p, theta) bin; in the future, it 
+            could be made for every (p, theta) bin and every true particle type,
+            selectable through sliders and dropdown menus.
+        `
+    },
+    "mostConfusedByDet": {
+        "title": "Top incorrect PID for true pions", 
+        "desc": `
+            Here we have six subplots; one for each detector. Each subplot shows
+            the particle in each (p, theta) bin which was the most common
+            incorrectly chosen particle type by the corresponding detector for a
+            sample of true pions. The percentage shown in the cell gives how
+            frequently that particle type was chosen for true pions that were
+            incorrectly identified by the corresponding detector. A value of
+            "all" indicates that there was little data in the region; the most
+            common incorrect identification was when the detector had no
+            information to contribute at all. While this plot is made only for
+            true pions, similar plots could be made for all the particle types.
+        `
+    },
+    "leadingWrong": {
+        "title": "Most frequent incorrect particle types", 
+        "desc": `
+            We have six subplots: one for each true particle type. Each subplot
+            then shows the most common incorrectly chosen particle type for the
+            (p, theta) bin and true particle type. (This is indicated by color.)
+            In each cell, a detector and frequency is also given. This detector 
+            was the detector which most frequently predicted the incorrect
+            particle type. The frequency gives the actual percentage of
+            incorrectly identified events in that bin which the detector chose
+            that particle type.
+        `
+    },
+    "CDCdisagree": {
+        "title": "Detectors that are most often wrong when the CDC is right and the ensemble is wrong", 
+        "desc": `
+            Here we have six subplots: one for each true particle type. For this
+            study, we consider specifically the events for which the particle
+            type predicted by the ensemble of detectors is incorrect <b>but the
+            CDC was correct</b>. For each subplot, we show the detector which
+            was most frequently incorrect, as well as that frequency at which 
+            they were incorrect as a function of momentum and theta.
+        `
+    }
+};
 
 const p_ranges = [
     '[0.5, 1.0] GeV', '[1.0, 1.5] GeV', '[1.5, 2.0] GeV', '[2.0, 2.5] GeV',
@@ -75,7 +193,8 @@ let correct_passwd = false;
 function loadURL() {
     const url = new URL(window.location);
     const sp = url.searchParams;
-    if (!sp.has('type') || !correct_passwd) {
+
+    if (!sp.has('type') || (!correct_passwd && sp.get('dset') != 'pgun6')) {
         dset_select.value = "pgun6";
         type_select.value = "conf";
         plot_select.innerHTML = plot_lists[type_select.value];
@@ -153,6 +272,8 @@ function binningSupported() {
         if (plot_select.value == "blfreq" && part_select.value != "")
             return false;
     }
+    if (type_select.value == "upcoming")
+        return false;
     return true;
 }
 
@@ -192,6 +313,16 @@ function setVisibilities() {
 
     for (const el of document.getElementsByClassName("noblame"))
         el.disabled = (plot_select.value == "blame_bypart");
+
+    if (type_select.value == "upcoming") {
+        document.getElementById("plot-title").style.display = "block";
+        document.getElementById("plot-desc").style.display = "block";
+        document.getElementById("plot-title").innerHTML = upcoming_plot_info[plot_select.value]["title"];
+        document.getElementById("plot-desc").innerHTML = upcoming_plot_info[plot_select.value]["desc"];
+    } else {
+        document.getElementById("plot-title").style.display = "none";
+        document.getElementById("plot-desc").style.display = "none";
+    }
 }
 
 function setImageSource() {
