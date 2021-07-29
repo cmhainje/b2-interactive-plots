@@ -256,8 +256,6 @@ function deltaSupported() {
 function fracSupported() {
     if (type_select.value != "conf")
         return false;
-    if (deltaSupported() && dlt_check_is_on)
-        return false;
     return true;
 }
 
