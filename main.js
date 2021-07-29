@@ -68,15 +68,15 @@ const plot_lists = {
 
 const upcoming_plot_info = {
     "maxLikelihood": {
-        "title": "Maximum detector likelihood values",
+        "title": "Maximum detector likelihood ratio values",
         "desc": `
             We have a six-by-six grid of subplots. Each row corresponds to a
             <b>particle hypothesis</b> and each column to a <b>detector</b>. The
             subplots then show a histogram of the corresponding detector's 
-            likelihoods for the corresponding hypothesis. These values are
+            likelihood ratios for the corresponding hypothesis. These values are
             colored by whether that hypothesis is, in fact, correct. For
             example, when looking at the CDC/e subplot, we see two histograms.
-            Both give the distribution of the CDC's electron likelihoods;
+            Both give the distribution of the CDC's electron likelihood ratios;
             however, the blue gives this distribution over true electrons and
             the orange gives this distribution over all other true particle
             types. Note that this plot shows the data only over a specific (p,
@@ -85,52 +85,54 @@ const upcoming_plot_info = {
         `
     },
     "likelihoodDiff": {
-        "title": "Per detector and hypothesis, difference between two largest likelihoods",
+        "title": "Per detector and hypothesis, difference between two largest likelihood ratios",
         "desc": `
             We again have a six-by-six grid of subplots. Each row corresponds to
             a <b>true particle sample</b> and each column to a <b>detector</b>. 
             Each subplot then shows the distribution of the difference between
-            the largest and second largest likelihoods for the given detector.
-            These are colored by whether the largest likelihood corresponds to
-            the correct hypothesis or not. For example, the CDC/e subplot 
-            contains two histograms. The blue one shows the distribution of L_e
-            minus L_2, where "2" is whatever hypothesis gave the second largest
-            likelihood. The orange one shows the distribution of L_1 minus L_2
-            where "1" is the hypothesis for the largest likelihood (which is 
-            <i>not</i> e) and "2" is the hypothesis for the second largest
-            likelihood. Note that this plot is made only in one (p, theta) bin;
-            in the future, it could be made in every (p, theta) bin.
+            the largest and second largest likelihood ratios for the given
+            detector.  These are colored by whether the largest likelihood ratio
+            corresponds to the correct hypothesis or not. For example, the CDC/e
+            subplot contains two histograms. The blue one shows the distribution
+            of P(e) minus P(2), where "2" is whatever hypothesis gave the second
+            largest likelihood ratio. The orange one shows the distribution of
+            P(1) minus P(2) where "1" is the hypothesis for the largest
+            likelihood ratio (which is <i>not</i> e) and "2" is the hypothesis
+            for the second largest likelihood ratio. Note that this plot is made
+            only in one (p, theta) bin; in the future, it could be made in every
+            (p, theta) bin.
         `,
     },
     "KCDCLikelihood": {
-        "title": "Distribution of the CDC kaon likelihood in each (p, theta) bin for true kaons", 
+        "title": "Distribution of the CDC kaon likelihood ratio in each (p, theta) bin for true kaons", 
         "desc": `
             Here we have a seven-by-eight grid of subplots. Each row corresponds
             to a <b>momentum bin</b> in GeV and each column to a <b>theta
             bin</b> in degrees. Each subplot shows the distribution in the 
-            corresponding (p, theta) bin of the CDC's kaon likelihoods for true
-            kaons, colored by whether the particle was correctly or incorrectly
-            identified. In principle, this plot could be made for every
-            combination of detector and particle type.
+            corresponding (p, theta) bin of the CDC's kaon likelihood ratios for
+            true kaons, colored by whether the particle was correctly or
+            incorrectly identified. In principle, this plot could be made for
+            every combination of detector and particle type.
         `
     },
     "piDetLikelihoods": {
-        "title": "All detector likelihoods for true pion sample", 
+        "title": "All detector likelihood ratios for true pion sample", 
         "desc": `
             We have a six-by-six grid of subplots. Each row corresponds to a
             <b>particle hypothesis</b> and each column to a <b>detector</b>.
             Each subplot then shows the distribution of the corresponding
-            detector's likelihoods for the corresponding hypothesis. The
-            histograms are colored by whether the likelihood is the largest of
-            that detector's likelihoods for the event. For example, when looking
-            at the TOP/mu plot, we see two histograms. The blue one shows the
-            distribution of the TOP's muon likelihoods when muon has the largest
-            likelihood of the particle types (even though we are only looking at
-            pions). The orange one shows the distribution of the TOP's muon
-            likelihoods when muons do not have the largest likelihood. Note that
-            this plot is only made in one (p, theta) bin; in the future, it 
-            could be made for every (p, theta) bin and every true particle type,
-            selectable through sliders and dropdown menus.
+            detector's likelihood ratios for the corresponding hypothesis. The
+            histograms are colored by whether the likelihood ratio is the
+            largest of that detector's likelihood ratios for the event. For
+            example, when looking at the TOP/mu plot, we see two histograms. The
+            blue one shows the distribution of the TOP's muon likelihood ratios
+            when muon has the largest likelihood ratio of the particle types
+            (even though we are only looking at pions). The orange one shows the
+            distribution of the TOP's muon likelihood ratios when muons do not
+            have the largest likelihood ratio. Note that this plot is only made
+            in one (p, theta) bin; in the future, it could be made for every (p,
+            theta) bin and every true particle type, selectable through sliders
+            and dropdown menus.
         `
     },
     "mostConfusedByDet": {
