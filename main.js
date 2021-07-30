@@ -245,10 +245,16 @@ function weightSupported() {
 }
 
 function deltaSupported() {
-    if (type_select.value == "conf")
-        return (plot_select.value == "abl" || wgt_check_is_on);
+    if (type_select.value == "conf") {
+        if (plot_select.value == "con")
+            return wgt_check_is_on;
+        else if (plot_select.value == "det")
+            return (frc_check_is_on || wgt_check_is_on);
+        else
+            return true;
+    }
     else if (type_select.value == "accu")
-        return (plot_select.value != "acc");
+        return (plot_select.value != "acc" || wgt_check_is_on);
     else
         return false;
 }
