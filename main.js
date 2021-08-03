@@ -198,26 +198,6 @@ const theta_ranges = [
     '[77°, 96°]', '[96°, 115°]', '[115°, 133°]', '[133°, 150°]',
 ];
 
-const part_select_options = {
-    "default": `
-        <option value="">All</option>
-        <option value="_e">Electron</option>
-        <option value="_mu">Muon</option>
-        <option value="_pi">Pion</option>
-        <option value="_K">Kaon</option>
-        <option value="_p">Proton</option>
-        <option value="_d">Deuteron</option> 
-    `,
-    "modified": `
-        <option value="_e">Electron</option>
-        <option value="_mu">Muon</option>
-        <option value="_pi">Pion</option>
-        <option value="_K">Kaon</option>
-        <option value="_p">Proton</option>
-        <option value="_d">Deuteron</option> 
-    `
-};
-
 let wgt_check_is_on = false;
 let frc_check_is_on = false;
 let dlt_check_is_on = false;
@@ -234,7 +214,7 @@ function loadURL() {
         plot_select.innerHTML = plot_lists[type_select.value];
         plot_select.value = "con";
         part_select.value = "";
-        det_select.value  = "";
+        det_select.value  = "_SVD";
         corr_select.value = "right";
         ctrb_select.value = "_bycor";
         wgt_check_is_on = false;
@@ -389,10 +369,18 @@ function setVisibilities() {
     } else {
         document.getElementById("plot-title").style.display = "none";
         document.getElementById("plot-desc").style.display = "none";
-        if (plot_select.value == "leadingWrong")    return false;
+        if (plot_select.value == "leadingWrong") return false;
     }
 
-    part_select.innerHTML = part_select_options[ (type_select.value == "alex") ? "modified" : "default" ];
+    const part_all_opt = document.getElementById('all-particles')
+    const show_all = (type_select.value == 'alex');
+    if (part_all_opt.hidden != show_all) {
+        part_all_opt.hidden = show_all;
+        part_all_opt.disabled = show_all;
+        if (show_all && part_select.value == '')
+            part_select.value = "_e";
+        part_select.dispatchEvent(new Event('change'));
+    }
 }
 
 function setImageSource() {
