@@ -6,6 +6,8 @@ const plot_div     = document.getElementById("plot-picker");
 const type_select  = document.getElementById("img-type-select");
 const part_select  = document.getElementById("part-select");
 const part_div     = document.getElementById("particle-type");
+const det_select   = document.getElementById("det-select");
+const det_div      = document.getElementById("detector-type");
 const corr_select  = document.getElementById("correct-select");
 const corr_div     = document.getElementById("correct-type");
 const ctrb_select  = document.getElementById("contrib-select");
@@ -63,6 +65,16 @@ const plot_lists = {
         <option value="mostConfusedByDet" class="upcoming">Each detector's top incorrect ID for true pions</option>
         <option value="leadingWrong"      class="upcoming">Most frequent incorrect particle types</option>
         <option value="CDCdisagree"       class="upcoming">Detectors that are most often wrong when CDC is right</option>
+    `,
+
+    'alex':`
+        <option value="maxLikelihood"      class="upcoming">Max detector likelihoods</option>
+        <option value="likelihoodDiff"     class="upcoming">Difference between largest detector likelihoods</option>
+        <option value="detTrueLikelihoods" class="upcoming">Detector's likelihood ratios for the true particle hypothesis, all bins</option>
+        <option value="partDetLikelihood"  class="upcoming">All detector likelihoods for each true particle type per bin</option>
+        <option value="mostConfusedByDet"  class="upcoming">Each detector's top incorrect ID for true particle type</option>
+        <option value="leadingWrong"       class="upcoming">Most frequent incorrect particle types</option>
+        <option value="detDisagreement"    class="upcoming">Detectors that are most often wrong when another detector is right</option>
     `
  };
 
@@ -186,6 +198,26 @@ const theta_ranges = [
     '[77°, 96°]', '[96°, 115°]', '[115°, 133°]', '[133°, 150°]',
 ];
 
+const part_select_options = {
+    "default": `
+        <option value="">All</option>
+        <option value="_e">Electron</option>
+        <option value="_mu">Muon</option>
+        <option value="_pi">Pion</option>
+        <option value="_K">Kaon</option>
+        <option value="_p">Proton</option>
+        <option value="_d">Deuteron</option> 
+    `,
+    "modified": `
+        <option value="_e">Electron</option>
+        <option value="_mu">Muon</option>
+        <option value="_pi">Pion</option>
+        <option value="_K">Kaon</option>
+        <option value="_p">Proton</option>
+        <option value="_d">Deuteron</option> 
+    `
+};
+
 let wgt_check_is_on = false;
 let frc_check_is_on = false;
 let dlt_check_is_on = false;
@@ -202,6 +234,7 @@ function loadURL() {
         plot_select.innerHTML = plot_lists[type_select.value];
         plot_select.value = "con";
         part_select.value = "";
+        det_select.value  = "";
         corr_select.value = "right";
         ctrb_select.value = "_bycor";
         wgt_check_is_on = false;
@@ -220,6 +253,7 @@ function loadURL() {
     plot_select.innerHTML = plot_lists[type_select.value];
     plot_select.value = sp.get('plot');
     part_select.value = sp.get('part');
+    det_select.value  = sp.get('det');
     corr_select.value = sp.get('corr');
     ctrb_select.value = sp.get('ctrb');
     wgt_check_is_on = (sp.get('wgt') == "true");
@@ -265,6 +299,18 @@ function fracSupported() {
     return true;
 }
 
+function detSupported() {
+    if (type_select.value == "alex") {
+        if (plot_select.value == "maxLikelihood") return false;
+        if (plot_select.value == "likelihoodDiff") return false;
+        if (plot_select.value == "leadingWrong") return false;
+        if (plot_select.value == "mostConfusedByDet") return false;
+        if (plot_select.value == "partDetLikelihood") return false;
+        return true;
+    }
+    return false;
+}
+
 function binningSupported() {
     if (type_select.value == "accu")
         return false;
@@ -280,6 +326,13 @@ function binningSupported() {
     }
     if (type_select.value == "upcoming")
         return false;
+    if (type_select.value == "alex") {
+        if (plot_select.value == "detDisagreement") return false;
+        if (plot_select.value == "leadingWrong") return false;
+        if (plot_select.value == "mostConfusedByDet") return false;
+        if (plot_select.value == "detTrueLikelihoods") return false;
+        return true;
+    }
     return true;
 }
 
@@ -287,6 +340,13 @@ function particleTypeSupported() {
     if (type_select.value == "accu") return true;
     if (plot_select.value == "blame") return true;
     if (plot_select.value == "blfreq") return !bin_check_is_on;
+    if (type_select.value == "alex") {
+        if (plot_select.value == "maxLikelihood")   return false;
+        if (plot_select.value == "likelihoodDiff")  return false;
+        if (plot_select.value == "detDisagreement") return false;
+        if (plot_select.value == "leadingWrong")    return false;
+        return true;
+    }
     return false;
 }
 
@@ -316,6 +376,7 @@ function setVisibilities() {
     ctrb_div.style.display = contribSplitSupported() ? "block" : "none";
     bin_div.style.display = binningSupported() ? "block" : "none";
     bin_select.style.display = (binningSupported() && bin_check_is_on) ? "block" : "none";
+    det_div.style.display = (detSupported()) ? "block": "none";
 
     for (const el of document.getElementsByClassName("noblame"))
         el.disabled = (plot_select.value == "blame_bypart");
@@ -328,7 +389,10 @@ function setVisibilities() {
     } else {
         document.getElementById("plot-title").style.display = "none";
         document.getElementById("plot-desc").style.display = "none";
+        if (plot_select.value == "leadingWrong")    return false;
     }
+
+    part_select.innerHTML = part_select_options[ (type_select.value == "alex") ? "modified" : "default" ];
 }
 
 function setImageSource() {
@@ -362,6 +426,9 @@ function setImageSource() {
 
     if (particleTypeSupported())
         src += part_select.value;
+    
+    if (detSupported())
+        src += det_select.value;
 
     if (binningSupported() && bin_check_is_on)
         src += "_" + slider_p.value + "_" + slider_theta.value;
@@ -376,6 +443,7 @@ function setURL() {
     sp.set('type', type_select.value);
     sp.set('plot', plot_select.value);
     sp.set('part', part_select.value);
+    sp.set('det',  det_select.value);
     sp.set('corr', corr_select.value);
     sp.set('ctrb', ctrb_select.value);
     sp.set('wgt', wgt_check_is_on);
@@ -398,6 +466,7 @@ part_select.addEventListener("change", update);
 plot_select.addEventListener("change", update);
 corr_select.addEventListener("change", update);
 ctrb_select.addEventListener("change", update);
+det_select.addEventListener("change", update);
 
 type_select.addEventListener("change", (event) => {
     plot_select.innerHTML = plot_lists[event.target.value];
