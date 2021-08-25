@@ -18,6 +18,8 @@ const frc_check    = document.getElementById("rownorm-toggle");
 const frc_div      = document.getElementById("rownorm-toggler");
 const dlt_check    = document.getElementById("delta-toggle");
 const dlt_div      = document.getElementById("delta-toggler");
+const rad_check    = document.getElementById("radar-toggle");
+const rad_div      = document.getElementById("radar-toggler");
 const bin_check    = document.getElementById("bin-toggle");
 const bin_div      = document.getElementById("bin-toggler");
 const bin_select   = document.getElementById("bin-picker");
@@ -51,8 +53,9 @@ const plot_lists = {
 
     'ctrb':`
         <option value="ctrb"   class="ctrb">Contributions</option>
-        <option value="blfreq" class="ctrb">Blame frequency</option>
         <option value="blfreq_bypart" class="ctrb">Blame frequency by particle type</option>
+        <option value="blfreq_bydet"  class="ctrb">Blame frequency by detector</option>
+        <option value="blfreq_bycorr" class="ctrb">Blame frequency by correctness</option>
         <option value="blame"  class="ctrb">Blame</option>
         <option value="blame_bypart"  class="ctrb">Blame by particle type</option>
     `,
@@ -201,6 +204,7 @@ const theta_ranges = [
 let wgt_check_is_on = false;
 let frc_check_is_on = false;
 let dlt_check_is_on = false;
+let rad_check_is_on = false;
 let bin_check_is_on = false;
 let correct_passwd = false;
 
@@ -220,6 +224,7 @@ function loadURL() {
         wgt_check_is_on = false;
         frc_check_is_on = false;
         dlt_check_is_on = false;
+        rad_check_is_on = false;
         bin_check_is_on = false;
         slider_p.value = 0;
         slider_theta.value = 0;
@@ -239,6 +244,7 @@ function loadURL() {
     wgt_check_is_on = (sp.get('wgt') == "true");
     frc_check_is_on = (sp.get('frc') == "true");
     dlt_check_is_on = (sp.get('dlt') == "true");
+    rad_check_is_on = (sp.get('rad') == "true");
     bin_check_is_on = (sp.get('bin') == "true");
     slider_p.value = sp.get('pslider');
     slider_theta.value = sp.get('tslider');
@@ -331,7 +337,12 @@ function particleTypeSupported() {
 }
 
 function correctnessSupported() {
-    return (type_select.value == "llrs") || (type_select.value == "nums") || (plot_select.value == "blame_bypart");
+    return (type_select.value == "llrs") || (type_select.value == "nums") || (plot_select.value == "blame_bypart") || radarSupported();
+}
+
+function radarSupported() {
+    if (plot_select.value == "blfreq_bypart" || plot_select.value == "blfreq_bydet")
+        return true;
 }
 
 function contribSplitSupported() {
@@ -356,7 +367,8 @@ function setVisibilities() {
     ctrb_div.style.display = contribSplitSupported() ? "block" : "none";
     bin_div.style.display = binningSupported() ? "block" : "none";
     bin_select.style.display = (binningSupported() && bin_check_is_on) ? "block" : "none";
-    det_div.style.display = (detSupported()) ? "block": "none";
+    det_div.style.display = (detSupported()) ? "block" : "none";
+    rad_div.style.display = (radarSupported()) ? "block" : "none";
 
     for (const el of document.getElementsByClassName("noblame"))
         el.disabled = (plot_select.value == "blame_bypart");
@@ -403,6 +415,9 @@ function setImageSource() {
     if (correctnessSupported())
         src += "_" + corr_select.value;
 
+    if (radarSupported() && rad_check_is_on)
+        src += "_radar";
+
     if (wgt_check_is_on)
         src += "_wgt";
 
@@ -437,6 +452,7 @@ function setURL() {
     sp.set('wgt', wgt_check_is_on);
     sp.set('frc', frc_check_is_on);
     sp.set('dlt', dlt_check_is_on);
+    sp.set('rad', rad_check_is_on);
     sp.set('bin', bin_check_is_on);
     sp.set('pslider', slider_p.value);
     sp.set('tslider', slider_theta.value);
@@ -476,6 +492,11 @@ frc_check.addEventListener("input", (event) => {
 
 dlt_check.addEventListener("input", (event) => {
     dlt_check_is_on = !(dlt_check_is_on);
+    update(event);
+});
+
+rad_check.addEventListener("input", (event) => {
+    rad_check_is_on = !(rad_check_is_on);
     update(event);
 });
 
