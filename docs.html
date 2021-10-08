@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
     <title>Docs | Interactive plots</title>
-    <style> body { max-width: 700px; } </style>
+    <style> body { max-width: 700px; margin: 0 auto; padding-bottom: 100px; } </style>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
@@ -16,294 +16,221 @@
 
     <h1>Documentation</h1>
 
-    <h2>Description of plots</h2>
-
     <p>
-        There are several fundamental classes of plots that we make:
-        'confusion', 'accuracy', 'weights', 'likelihood ratios', 'numbers of
-        events', and 'contributions'. Confusion plots deal with visualizing
-        confusion matrices, allowing us to analyze the predictions made from the
-        log-likelihood information and showing us generally which particle types
-        tend to be confused with others.  Accuracy plots show the accuracy of
-        our identification system as a function of momentum and theta. When
-        restricted to single particles, these plots show the efficiency for
-        those particle types. Lastly, the weights plots visualize the
-        calibration weights that we have trained.
+        These plots accompany research that has been presented in several 
+        talks. 
     </p>
 
-    <h3>Confusion</h3>
+    <ul>
+        <li><a href="https://indico.belle2.org/event/4960/">Joint Lepton/Hadron ID (Jul 29)</a></li>
+        <li><a href="https://indico.belle2.org/event/5185/">Joint Lepton/Hadron ID (Sep 14)</a></li>
+        <li><a href="https://indico.belle2.org/event/5342/">Physics Performance (Oct 6)</a></li>
+    </ul>
 
     <p>
-    There are three kinds of confusion plots that we give: 'confusion',
-    'detector confusion', and 'ablation confusion'.
+        There is also an accompanying Python package being built to automate
+        the production of plots such as these. The repository hosting the 
+        development of this package is 
+        <a href="https://stash.desy.de/users/chainje/repos/pidml">here</a>
+        on the DESY Stash.
+    </p>
+    
+    <h2>Category</h2>
+
+    <p>
+        We separate our plots into a few broad categories which can be selected
+        from the 'Category' dropdown menu. These are "General performance", 
+        "Detector contributions", and "Likelihood ratios". The general performance
+        category includes plots that explore the general PID performance of the 
+        system or of a given detector. The detector contributions category 
+        features a somewhat deeper dive into the roles played by each detector in 
+        the overall performance using our contribution metric. The likelihood 
+        ratios section features plots made to study the PID on a deeper level by
+        considering the likelihood ratios themselves.
     </p>
 
-    <p>
-    <b>Confusion</b> plots show the confusion matrix of the model for the
-    specified data. In particular, we use log-likelihood information from all
-    six PID detectors to calculate the likelihood ratios and determine the
-    predicted identity of the particle.
-    </p>
+    <h3>General performance</h3>
 
     <p>
-    <b>Detector confusion</b> plots show the confusion matrices for each
-    detector for the specified data. In particular, we ask the question, "If we
-    only had log-likelihood data from <i>this</i> specific detector, what would
-    the resulting particle identification be?" Notice also that the number of
-    events in the dataset varies for each detector. This is because we omit any
-    events for which the detector did not report log-likelihoods when
-    calculating these confusion matrices.
-    </p>
-
-    <p>
-    <b>Ablation confusion</b> plots show the confusion matrices for the
-    specified data that would be computed if we disabled one of the detectors.
-    In particular, we ask the question, "If <i>this</i> specific detector were
-    disabled, what would the resulting particle identification be?" For these
-    plots, we hope to see that disabling a detector worsens performance, so we
-    generally hope to see that the values along the diagonal become smaller and
-    the values off the diagonal become larger. This would indicate that the
-    detector adds useful and valuable information to the identification
-    calcuation.
-    </p>
-
-    <h3>Accuracy</h3>
-
-    <p>
-    There are three kinds of accuracy plots that we provide: 'accuracy',
-    'detector accuracy', and 'ablation accuracy'. Note that when split by
-    particle type, accuracy plots give the particle efficiency.
+        There are five kinds of general performance plots that we give: 
+        'confusion', 'efficiency', 'ROC curve', 'AUC score', and 'top wrong
+        PID'.
     </p>
 
     <p>
-    <b>Accuracy</b> plots show the accuracy of the particle identification
-    system in each \( (p, \theta) \) bin. This would be equivalent to looking at
-    the confusion matrix in each \( (p, \theta) \) bin and computing the sum of
-    the diagonal entries divided by the total number of events in the bin.
+        <b>Confusion</b> plots show the confusion matrix of the model for the
+        specified data. In particular, we use log-likelihood information from
+        all six PID detectors to calculate the likelihood ratios and determine
+        the predicted identity of the particle.
     </p>
 
     <p>
-    <b>Detector accuracy</b> plots show the accuracy of the particle
-    identification system in each \( (p, \theta) \) bin using only the
-    log-likelihood information from a single detector at a time.
+        <b>Efficiency</b> plots show the signal efficiency of the particle ID
+        system for a given particle type in each \( p, \theta \) bin. One can
+        also plot the overall accuracy (over all particle types) in each bin by
+        choosing the 'All' option in the particle type dropdown.
     </p>
 
     <p>
-    <b>Ablation accuracy</b> plots show the same thing as the standard accuracy
-    plots, but they again ask the question, "How would this be impacted if one
-    of the detectors was disabled?"
+        <b>ROC curve</b> plots give the one-versus-rest ROC curves for each of 
+        the particle types. 
     </p>
 
-    <h3>Weights</h3>
+    <p>
+        <b>AUC score</b> plots show the one-versus-rest AUC scores for a given 
+        particle type in each \( p, \theta \) bin. One can also plot that
+        average AUC score over all particle types in each bin by choosing the
+        'All' option in the particle type dropdown.
+    </p>
 
     <p>
-    The <b>Weights</b> plots show the trained weights corresponding to the
-    network that was trained either on the full dataset or on the data in the
-    specified bin. These weights generally serve to push adjust the general
-    magnitude of detectors' log-likelihoods, or to increase intra-detector
-    likelihood separation between given particle types. They should <i>not</i>
-    in general be understood as describing the "importance" of a detector 
-    for the likelihood calculation, as that depends also on the magnitude of
-    the detector's contributions to the hypothesis log-likelihoods and the
-    resulting likelihood ratio.
+        <b>Top wrong PID</b> plots show the most commonly chosen incorrect
+        particle type in each \( p, \theta \) bin. These plots are most
+        informative when the events are first filtered by true particle type.
+    </p>
+    
+    <h3>Detector contributions</h3>
+
+    <p>
+        Detector contribution plots aim to help elucidate the role that each
+        detector plays individually in an identification. Specifically, for some
+        event with predicted particle type \( h \), we define the contribution
+        of detector \( d \) to be 
+        \[ \text{contrib}_d = P(h) - P(h)_{\cancel{d}}, \]
+        where \( P(h) \) is the likelihood ratio for hypothesis \( h \) and 
+        \( P(h)_{\cancel{d}} \) is the same likelihood ratio but calculated
+        omitting the log-likelihood data of detector \( d \). Then, of the six
+        detectors, the one with the largest contribution is said to take the
+        "blame" for the identification, good or bad. <b>Note</b> specifically
+        that this is only defined for the hypothesis with the maximum likelihood
+        ratio.  We do <i>not</i> consider a detector's contribution to the
+        lesser likelihood ratios in these plots.
+    </p>
+
+    <p>
+        <b>Contribution distribution</b> plots show specifically the
+        distribution of these contribution values.
+    </p>
+
+    <p>
+        <b>Average contribution</b> plots show the average value of the 
+        contribution metric achieved by each of the subdetectors on events of
+        each particle type.
+    </p>
+
+    <p>
+        <b>Blame frequency</b> plots show how frequently each detector takes the
+        blame for an identification. Specifically, these plots show the fraction
+        of times that each detector had the largest contribution to the maximum 
+        likelihood ratio.
+    </p>
+
+    <p>
+        <b>Blame</b> plots show which detector in each \( (p, \theta) \) bin
+        takes the blame the most frequently, along with the corresponding
+        frequency.
     </p>
 
     <h3>Likelihood ratios</h3>
 
     <p>
-    We provide two different views of the likelihood ratios: the distribution of
+        These plots are not quite yet available, but are coming soon!
+    </p>
+
+    <!-- <p>
+    We provide two different views of the likelihood ratios: the distribution of    
     <i>all</i> likelihood ratios for every event or simply the distribution of
     the maximum likelihood ratios. For each, one can filter by whether the event
     was correctly or incorrectly identified. 
     </p>
 
     <p>
-    <b>All event likelihood ratios</b> plots show the distributions of the 
+    <b>All event likelihood ratios</b> plots show the distributions of the     
     likelihood ratios for all six supported particle hypotheses. These are
     separated into six subplots by true particle type.
     </p>
 
     <p>
-    <b>Maximum event likelihood ratios</b> plots show the distributions of the 
+    <b>Maximum event likelihood ratios</b> plots show the distributions of the     
     maximum likelihood ratio for each event. When filtering by correctly
     identified events, we can see that the plots only show the distributions of
     the likelihood ratios for the correct hypothesis. This makes sense, as the
     event being correctly identified means that the correct hypothesis had the
     largest likelihood ratio.
-    </p>
-
-    <h3>Numbers of events</h3>
-
-    <p>
-    These plots do exactly what they say on the tin: they simply show the number 
-    of events in each \( (p, \theta) \) bin. There are two primary kinds of these
-    plots: <b>no split</b>, which just shows the total number of events in each
-    bin, and <b>split by particle</b>, which shows the number of events of each
-    particle type in each bin. One can further filter these events by correct or
-    incorrect identification.
-    </p>
-
-    <h3>Contributions</h3>
-
-    <p>
-    Contributions plots aim to help elucidate the role that each detector plays
-    individually in an identification. Specifically, for some event with 
-    predicted particle type \( h \), we define the contribution of detector 
-    \( d \) to be 
-    \[ \text{contrib}_d = P(h) - P(h)_{\cancel{d}}, \]
-    where \( P(h) \) is the likelihood ratio for hypothesis \( h \) and 
-    \( P(h)_{\cancel{d}} \) is the same likelihood ratio but calculated omitting
-    the log-likelihood data of detector \( d \). Then, of the six detectors,
-    the one with the largest contribution is said to take the "blame" for the 
-    identification, good or bad.
-    </p>
-    
-    <p>
-    <b>Note</b> specifically that this is only defined for the hypothesis with
-    the maximum likelihood ratio.  We do <i>not</i> consider a detector's
-    contribution to the lesser likelihood ratios in these plots.
-    </p>
-
-    <p>
-    <b>Contributions</b> plots within this category show specifically the
-    distribution of these contribution values. One can choose to split up the
-    events by correctness of identification, detector type, or true particle
-    type. 
-    </p>
-
-    <p>
-    <b>Blame frequency</b> plots show how frequently each detector takes the 
-    blame for an identification. Specifically, these plots show the number 
-    of times that each detector had the largest contribution to the maximum 
-    likelihood ratio.
-    </p>
-
-    <p>
-    <b>Blame</b> plots show which detector in each \( (p, \theta) \) bin takes 
-    the blame the most frequently, along with the corresponding frequency. These
-    plots are split into two subplots by the correctness of the final
-    identification, and may be filtered by true particle type.
-    </p>
-
-    <p>
-    <b>Blame by particle type</b> plots show the blame plots split into six
-    subplots corresponding to the six supported particle types. The data may 
-    then be filtered by either correct or incorrect identifications.
-    </p>
+    </p> -->
 
 
     <h2>Options</h2>
-
     <p>
-    For most of the above plots, there are additional options that can be
-    selected. These are described below.
+        For most of the above plots, there are additional options that can be
+        selected. These are described below.
     </p>
 
-    <h3>Use trained calibration weights?</h3>
-
+    <h3>Detector class</h3>
     <p>
-    This option allows you to view the same plot if the trained calibration
-    weights were used in the likelihood ratio calculations. In the majority of
-    cases, this improves the overall identification performance. For more on
-    these weights and how they are used, please read our internal note.
+        This option allows one to choose whether to use the full ensemble of
+        detectors, only a single detector, or all <i>but</i> one detector when
+        computing the particle IDs and the plots that result.
     </p>
 
+    <h3>Detector</h3>
     <p>
-    Note that for 'accuracy' plots, enabling this option will cause accuracies
-    to be computed in each bin using the weights from the network trained in
-    <i>that</i> particular bin. There are currently no provided plots that show
-    the per-bin accuracy computed using the weights from the network on all
-    data.
+        If the detector class is chosen to be either single detector or ablation
+        (all but one), this option allows one to choose which detector to 
+        use/omit.
     </p>
 
-    <h3>Plot difference from standard, unweighted?</h3>
-
+    <h3>Show change from standard?</h3>
     <p>
-    In many cases, it makes sense to understand how a certain set of options
-    has impacted performance relative to the standard, unweighted baseline.
-    For example, if we are looking at a standard 'Confusion' plot and we add
-    trained calibration weights, it may be more instructive to understand
-    how the confusion matrix has changed relative to the unweighted confusion
-    matrix. That is what this option does.
+        For the "ablation test" option on supported plots, we allow one to
+        visualize specifically the absolute difference in the plotted values
+        from the standard full ensemble values.
     </p>
 
+    <h3>Normalization</h3>
     <p>
-    Note that when looking at ablation confusion plots, this option always
-    shows the difference between the ablation confusion matrices and the
-    standard, unweighted confusion matrix (in the specified bin or over the
-    whole dataset). If adding weights, this does <i>not</i> show the difference
-    between the weighted and unweighted ablation confusion matrices. To
-    understand the difference between the weighted and unweighted ablation
-    confusion matrices, it is best to compare manually.
+        This option allows one to change the normalization of values in 
+        confusion matrices. Normalizing by row will give efficiencies relative
+        to each true particle type. Normalizing by column will give purities
+        relative to each predicted particle type. Not normalizing at all will 
+        give the raw number of events in each cell.
     </p>
 
+    <h3>Use bins?</h3>
     <p>
-    When looking at accuracy plots, this option shows the difference between
-    the current selection and the standard, unweighted, non-ablation accuracy
-    values for the given particle type. That is to say that if looking at 
-    the ablation accuracy plot for electrons only, this optional will show 
-    the difference between the current data and the standard accuracy plot
-    for electrons only, not the standard accuracy plot for all particles.
-    </p>
-
-    <h3>Normalize values by row?</h3>
-
-    <p>
-    This option normalizes the values in a confusion matrix by the row sums.
-    As a result, values in the confusion matrix can be interpreted as fractions
-    of the total number of true particles of the row's particle type.  Values
-    in the 'muon' row, for example, can be interpreted as the fraction of true
-    muons that were predicted to be <i>x</i>, where <i>x</i> is the column
-    particle type.
-    </p>
-
-    <h3>Binned?</h3>
-
-    <p>
-    This option allows you to view the same plot but made using only the data
-    in a given \( (p, \theta) \) bin. Checking this box also causes two sliders
-    to appear, allowing one to change bins in a very intuitive way.  For
-    'weights' plots, this option shows the weights for the network which was
-    trained on data in the selected bin. If the "use weights" option is enabled,
-    this option means that the weights corresponding to that specific bin are
-    loaded and used.
-    </p>
-
-    <p>
-    For 'confusion' plots: if this option is unselected, then the confusion 
-    matrix is computed using all of the data in the dataset. Choosing the 
-    "use weights" option will use the weights from the network which was 
-    trained on the entire dataset.
+        This option allows you to view the same plot but made using only the
+        data in a given \( (p, \theta) \) bin. Checking this box also causes two
+        sliders to appear, allowing one to change bins in a very intuitive way.
+        In general, when this option is not selected, the quantities shown are 
+        computed over all available data in the dataset.
     </p>
 
     <h3>Correctness</h3>
-    
     <p>
-    For many plots, there is the option to filter by correctness. One can thus
-    choose to view the plot computed only for events which were correctly 
-    identified, incorrect identified, or sometimes both.
+        For many plots, there is an option to filter by correctness. One can
+        thus choose to view the plot computed only for events which were
+        correctly identified, incorrect identified, or all events regardless.
     </p>
 
     <h3>Particle type</h3>
-
     <p>
-    For accuracy plots, there is the additional option to select a particle
-    type. This shows the same accuracy plots computed if only events from the
-    specified particle type are considered. As such, these can be understood as
-    the particle efficiencies as a function of \( p \) and \( \theta \).
+        For several plots, there is an option to select a particle type. This
+        will in general filter the data used to compute the plotted values 
+        according to the true particle type of each event.
     </p>
 
     <h2>Data used for these plots</h2>
 
     <p>
-    The data that were used for these plots are particle gun events, simulated
-    using BASF2 release 05-02-06. There are approximately 13 million such events,
-    comprised of electrons, muons, pions, kaons, protons, and deuterons in
-    approximately equal numbers. Data were generated with a uniform distribution in 
-    momentum from 0.5 to 5 GeV, in \( \theta \) from 10 to 170 degrees, and in
-    \( phi \) from 0 to 360 degrees. For binned studies, we adopt the \( (p, \theta) \)
-    bins that are used by the Belle II performance group. The cutoffs for these
-    bins are given by
+        The data that were used for these plots are particle gun events,
+        simulated using BASF2 release 05-02-06. There are approximately 13
+        million such events, comprised of electrons, muons, pions, kaons,
+        protons, and deuterons in approximately equal numbers. Data were
+        generated with a uniform distribution in momentum from 0.5 to 5 GeV, in
+        \( \theta \) from 10 to 170 degrees, and with \( \phi \) varying through
+        its entire phase space. For binned studies, we adopt the \( (p, \theta)
+        \) bins that are used in Belle II systematics studies. The cutoffs for
+        these bins are given by
     </p>
 
     <ul>
@@ -311,14 +238,5 @@
         <li>\( \theta \): { 17, 28, 40, 60, 77, 96, 115, 133, 150 } degrees</li>
     </ul>
 
-    <p>
-    The BASF2 steering script that was used to run these simulations as well as 
-    all of the code necessary to make all of these plots (and this website) can
-    be found at <a href="https://stash.desy.de/users/chainje/repos/pidml">this
-    stash repository</a>.
-    </p>
-
-
-    
 </body>
 </html>

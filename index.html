@@ -1,176 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>Interactive plots</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Interactive plots</title>
 </head>
+
 <body>
 
-    <r-grid columns=5>
+  <template id="selector-template">
+    <label :for="key">{{ label }}</label><br>
+    <select :name="key" v-model="store[key]">
+      <option v-for="option in options" :value="option.value">
+        {{ option.text }}
+      </option>
+    </select><br><br>
+  </template>
 
-    <r-cell span=1 class="controls" span-s=row>
-        <p><a href="docs.html">Documentation</a></p>
+  <template id="checkbox-template">
+    <input type="checkbox" :name="key" v-model="store[key]"/>
+    <label :for="key">{{ label }}</label><br><br>
+  </template>
 
-        <p><a onclick="askPass()" href="#">Access private plots</a></p>
+  <template id="sliders-template">
+    <label id="string-p" for="slider-p">{{ p_labels[store['p_bin']] }}</label><br>
+    <input type="range" list="tickmarks-p" id="slider-p" name="slider-p"
+          min="0" max="6" step="1" value="0" v-model="store['p_bin']">
+    <datalist id="tickmarks-p">
+      <option v-for="i in [0,1,2,3,4,5,6]" :value="i"></option>
+    </datalist>
 
-        <div id="dset-picker" style="display: none;">
-            <label for="dset-select">Dataset</label>
-            <br>
-            <select name="dset" id="dset-select">
-                <option value="pgun6">13M pgun {e-, mu-, pi+, K+, p, d}</option>
-                <option value="pgun6_bothcharge">16M pgun {e, mu, pi, K, p, d} + antiparticles</option>
-            </select>
-            <br><br>
-        </div>
+    <br><br>
+    <label id="string-theta" for="slider-theta">{{ t_labels[store['t_bin']] }}</label><br>
+    <input type="range" list="tickmarks-theta" name="slider-theta" id="slider-theta"
+          min="0" max="7" step="1" value="0" v-model="store['t_bin']">
+    <datalist id="tickmarks-theta">
+      <option v-for="i in [0,1,2,3,4,5,6,7]" :value="i"></option>
+    </datalist>
+  </template>
 
-        <label for="img-type-select">Image type:</label>
-        <br>
-        <select name="image-type" id="img-type-select">
-            <option value="conf">Confusion</option>
-            <option value="accu">Accuracy</option>
-            <option value="wgts">Weights</option>
-            <option value="llrs">Likelihood ratios</option>
-            <option value="nums">Numbers of events</option>
-            <option value="ctrb">Contributions</option>
-            <option value="upcoming">Upcoming</option>
-            <option value="alex">New!</option>
-        </select>
+  <div class="container" v-scope="">
 
-        <div id="plot-picker">
-            <br>
-            <label for="plot-select">Choose plot:</label>
-            <br>
-            <select name="plot-type" id="plot-select">
-                <option value="con" class="conf">Confusion</option>
-                <option value="det" class="conf">Detector confusion</option>
-                <option value="abl" class="conf">Ablation confusion</option>
-            </select>
-        </div>
+    <div class="menucol">
 
-        <div id="particle-type" style="display: none;">
-            <br>
-            <label for="part-select">Particle type:</label>
-            <br>
-            <select name="part-type" id="part-select">
-                <option value="" id="all-particles">All</option>
-                <option value="_e">Electron</option>
-                <option value="_mu">Muon</option>
-                <option value="_pi">Pion</option>
-                <option value="_K">Kaon</option>
-                <option value="_p">Proton</option>
-                <option value="_d">Deuteron</option>
-            </select>
-        </div>
+      <h1>PID studies</h1>
 
-        <div id="detector-type" style="display: none;">
-            <br>
-            <label for="det-select">Detector:</label>
-            <br>
-            <select name="det-type" id="det-select">
-                <option value="_SVD">SVD</option>
-                <option value="_CDC">CDC</option>
-                <option value="_TOP">TOP</option>
-                <option value="_ARICH">ARICH</option>
-                <option value="_ECL">ECL</option>
-                <option value="_KLM">KLM</option>
-            </select>
-        </div>
+      <p><a href="docs.html">Documentation</a></p>
 
-        <div id="correct-type" style="display: none;">
-            <br>
-            <label for="correct-select">Correctness:</label>
-            <br>
-            <select name="correct-type" id="correct-select">
-                <option value="right">Correctly identified</option>
-                <option value="wrong">Incorrectly identified</option>
-                <option value="both" class="noblame">All</option>
-            </select>
-        </div>
+      <div v-if="store.debug">
+        <p>Global state:</p>
+        <p>{{ store }}</p>
+      </div>
 
-        <div id="contrib-type" style="display: none;">
-            <br>
-            <label for="contrib-select">Split subplots by:</label>
-            <br>
-            <select name="contrib-type" id="contrib-select">
-                <option value="_bycor">Correctness of identification</option>
-                <option value="_bydet">Detector</option>
-                <option value="_bypart">Particle type</option>
-            </select>
-        </div>
+      <div v-scope="GenSelector()"></div>
 
-        <div id="weight-toggler">
-            <br>
-            <input type="checkbox" name="weight-toggle" id="weight-toggle">
-            <label for="weight-toggle">Use trained calibration weights?</label>
-        </div>
+      <div v-scope="ImgSelectorGen()"  v-if="store['general'] === 'gen'"
+           @mounted="store['image'] = 'conf'"
+      ></div>
+      <div v-scope="ImgSelectorCtrb()" v-else-if="store['general'] === 'ctrb'"
+           @mounted="store['image'] = 'ctrb'"
+      ></div>
+      <div v-scope="ImgSelectorLLR()"  v-else-if="store['general'] === 'llr'"
+           @mounted="store['image'] = 'llr'"
+      ></div>
 
-        <div id="delta-toggler" style="display: none;">
-            <br>
-            <input type="checkbox" name="delta-toggle" id="delta-toggle">
-            <label for="delta-toggle">Plot difference from standard, unweighted?</label>
-        </div>
+      <div v-scope="DetClassSelector()"    v-if="store.detClassSupported()"></div>
+      <div v-scope="DetSelector()"         v-if="store.detSupported()"></div>
+      <div v-scope="CorrectnessSelector()" v-if="store.corrSupported()"></div>
+      <div v-scope="ParticleSelector()"    v-if="store.partSupported()"></div>
+      <div v-scope="NormSelector()"        v-if="store.normSupported()"></div>
+      <div v-scope="DiffCheck()"           v-if="store.diffSupported()"></div>
 
-        <div id="rownorm-toggler">
-            <br>
-            <input type="checkbox" name="rownorm-toggle" id="rownorm-toggle">
-            <label for="rownorm-toggle">Normalize values by row?</label>
-        </div>
+      <div v-if="store.binSupported()">
+        <div v-scope="BinCheck()"></div>
+        <div v-scope="BinSliders()" v-if="store['binned']"></div>
+      </div>
 
-        <div id="radar-toggler">
-            <br>
-            <input type="checkbox" name="radar-toggle" id="radar-toggle">
-            <label for="radar-toggle">View as radar?</label>
-        </div>
+    </div>
 
-        <div id="bin-toggler">
-            <br>
-            <input type="checkbox" name="bin-toggle" id="bin-toggle">
-            <label for="bin-toggle">Binned?</label>
+    <div class="imagecol">
+      <div v-scope="ImageDisplay()">
+        <p v-if="store.debug">{{ filename() }}</p>
 
-            <div id="bin-picker" style="display: none;">
-                <br>
-                <label id="string-p" for="slider-p">p: [0.5, 1.0] GeV</label><br>
-                <input type="range" list="tickmarks-p" min="0" max="6" step="1" id="slider-p" name="slider-p" value="0">
-                <datalist id="tickmarks-p">
-                    <option value="0"></option>
-                    <option value="1"></option>
-                    <option value="2"></option>
-                    <option value="3"></option>
-                    <option value="4"></option>
-                    <option value="5"></option>
-                    <option value="6"></option>
-                </datalist>
+        <p v-if="store.general === 'llr' || store.image === 'top_wrong'">
+          This image has not yet been uploaded. Check back soon!
+        </p>
+        <img v-else :src="filename()" alt="">
+      </div>
+    </div>
 
-                <br><br>
-                <label id="string-theta" for="slider-theta">theta: [17°, 28°]</label><br>
-                <input type="range" list="tickmarks-theta" min="0" max="7" step="1" id="slider-theta" name="slider-theta" value="0">
-                <datalist id="tickmarks-theta">
-                    <option value="0"></option>
-                    <option value="1"></option>
-                    <option value="2"></option>
-                    <option value="3"></option>
-                    <option value="4"></option>
-                    <option value="5"></option>
-                    <option value="6"></option>
-                    <option value="7"></option>
-                </datalist>
-            </div>
-        </div>
-    </r-cell>
+  </div>
 
-    <r-cell span=2.. class="img-container" span-s=row>
-        <h2 id="plot-title" style="display: none; text-align: left">Title</h2>
-        <img src="pgun6/conf_con.png" id="image"/>
-        <p id="plot-desc" style="display: none; text-align: left">Description of plot.</p>
-    </r-cell>
-    
-    </r-grid>
-
-    <script src="main.js"></script>
-    <script>loadURL()</script>
+  <script src="https://unpkg.com/petite-vue@0.3.0"></script>
+  <script src="main.js" type="module"></script>
 
 </body>
+
 </html>
