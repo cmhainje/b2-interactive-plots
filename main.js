@@ -37,7 +37,7 @@ const store = reactive({
            || (this.general === 'ctrb' && this.image !== 'blame')
   },
 
-  debug: true
+  debug: false
 });
 
 
