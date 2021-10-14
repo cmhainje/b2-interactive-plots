@@ -85,7 +85,7 @@
       <div v-scope="ImageDisplay()">
         <p v-if="store.debug">{{ filename() }}</p>
 
-        <p v-if="store.general === 'llr' || store.image === 'top_wrong'">
+        <p v-if="store.general === 'llr'">
           This image has not yet been uploaded. Check back soon!
         </p>
         <img v-else :src="filename()" alt="">
